@@ -1,0 +1,30 @@
+Ein riesiges Update für das Java RPG! Viel Spaß mit all den Änderungen!
+(Es tut uns leid dass ihr so lange warten musstet)
+Mehr Infos im Changelog...
+
+- v.0.0.0009a 
+
+Ausführen mit cmd: java -jar RPG.jar oder einfach die Batch-Dateien verwenden!
+Argumente:
+	manual		Öffnet das Handbuch, dieses ist noch im Aufbau und keineswegs vollständig!
+	debug		Aktiviert den Debugger direkt
+	logging		Aktiviert die Ausgabe des Konsolentextes in eine log.txt Datei im Ausführungsverzeichnis
+
+Es müssen im Ausführordner eine map1.json - Datei und eine enemies.json - Datei vorhanden sein, ansonsten
+wirft das Programm einen Fehler. Mithilfe dieser Dateien ist es theoretisch bereits möglich, eigene Karten
+mit eigenen Gegnern zu erstellen. Falls eine Anleitung dazu gewünscht ist, können wir diese gerne erstellen.
+Wir garantieren jedoch nur mit den mitgelieferten Standard-Dateien ein lauffähiges Programm.
+
+Sollten Bugs oder Ähnliches gefunden worden sein, bitte in folgendem Format schreiben:
+
+Bug : *Beschreibung*
+    : *Wie wird er ausgelöst*
+
+
+Rückmeldungen und Verbesserungen im Review Part schreiben, Bugs im Bug Part melden.
+Auch sprachliche Fehler o.ä. können im Bug Part gemeldet werden.
+
+
+Review:
+
+Bug:	

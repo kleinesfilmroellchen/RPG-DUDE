@@ -1,0 +1,36 @@
+Eine Kartenerstellhilfe für die map.json Dateien
+------------------------------------------------
+
+"map-id" ist der *einmalige* Identifikationsstring der Karte 
+	(muss später beachtet werden, wenn mehrere Karten unterstützt werden)
+"compatible-version" gibt an, mit welcher Spielversion diese Karte kompatibel ist.
+	Das Spiel überprüft diese Property und lädt die Karte nur, wenn es selbst dieselbe Version hat.
+	Somit kann sichergestellt werden, dass bei einer Veränderung des Kartenformats keine unvorhergesehenen Fehler auftreten.
+
+"room-matrix" enthält die eigentlichen Räume:
+	Jede Ebene hat ein eigenes Objekt mit den Properties "floor" und "rooms".
+	floor gibt die Nummer dieser Ebene an (muss einmalig sein)
+	und rooms ist die Matrix mit den Räumen, charakterisiert durch ihre Ausgänge.
+	Die Position der Räume kann man natürlich der Matrix entnehmen.
+
+Ausgänge
+--------
+
+Die Ausgänge werden folgendermaßen charakterisiert:
+
+Binär: 0            0            0            0            0            0
+       ^            ^            ^            ^            ^            ^
+       |            |            |            |            |            |
+  Treppe nach  Treppe nach    Ausgang      Ausgang      Ausgang      Ausgang
+     oben         unten         Nord         Süd          Ost          West
+
+Eine 1 steht immer für einen Ausgang, eine 0 für keinen Ausgang. Die Zahl muss danach noch in das Dezimalformat konvertiert werden.
+Beispiel:
+"b011100"
+Diese Zahl für den Raum im Binärformat sagt aus: Treppe nach unten, Ausgang Norden und Süden, 
+	aber keine Treppe nach oben oder Ausgänge nach Osten oder Westen.
+Eine Konvertierung der Zahl in das Dezimalformat ergibt "d28", also muss 28 an dieser Stelle in die Raummatrix eingetragen werden.
+
+Häufige Zahlen: d63 für Ausgänge nach allen Richtungen und allen Treppen,
+                d15 für Ausgänge nach allen Richtungen und keinen Treppen,
+				d12 für einen Nord-Süd-Gang, d3 für einen Ost-West-Gang.

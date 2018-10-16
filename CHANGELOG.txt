@@ -1,0 +1,52 @@
+Version			Beschreibung
+<Datum>
+
+Versionen mit einem "R" wurden veröffentlicht
+--------------------------------------------------------------------------------------------------------------------------------
+
+Alpha Phase
+
+0.0.0000a		DJ beginnt das Projekt "jrpg" (später "javaRPG" aufgrund von Verwechselung des Namen)
+<01.12.2017>		Erstellung des Spielers und erster Entscheidungsmöglichkeiten
+
+0.0.0001a	R	Erste Tests mit Koordinaten und Level	
+<05.12.2017>
+
+0.0.0002a		Bearbeitungen im Text (Einrückungen, etc.)
+<07.12.2017>
+
+0.0.0003a	R	Erster Test des Kampfsystems möglich! Erster Mob hinzugefügt: Dummy.				
+<07.12.2017>		Normal Mode: Optionen "Dummy spawnen", "Angriff" und "Umschauen" hinzugefügt
+					Debug Mode:  Option "Zaubertrank" hinzugefügt
+
+0.0.0004a		klfr tritt Projekt "javaRPG" bei
+<11.12.2017>		Verbesserungen des Programmcodes
+					Credits, etc.
+			
+0.0.0005a	R	Es ist nun möglich bis zu einen Dummy in jedem Raum zu spawnen
+<14.12.2017>		Bug fixes
+
+0.0.0006a		Flucht implementiert
+<27.02.2018>		verschiedene Bugs behoben
+					Verbesserungen im Kampfsystem
+					Datei-Logging ermöglicht
+					Laden der Karte und der Gegnerprefabs, bislang ohne Effekt
+
+0.0.0007a		Handbuch eingebaut
+<27.02.2018>		Erste Handbuchseiten geschrieben
+					Handbuchsuche
+
+0.0.0008a	 	Weitere Verbesserungen, Bugfixes, Textverbesserungen
+<27.02.2018>		Testdummys entfernt - kein "t" Befehl mehr
+					Gegner werden aus Karte geladen und im Spiel genutzt
+					Karte wird genutzt -> Bewegung nur möglich falls Räume Ausgänge haben
+					Spielerdaten werden aus Karte geladen
+					Vorbereitungen für geheime zukünftige Funktionen
+
+0.0.0009a	R	Es wurde ein Bug behoben, bei dem das Fortbewegen nach Norden und Süden unbegrenzt
+<11.10.2018>		möglich war.
+
+In Arbeit:
+	- Magiesystem (vermutlich 2 Stück)
+	- Spiel speichern
+	- Itemsystem
