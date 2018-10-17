@@ -14,17 +14,3 @@ Es müssen im Ausführordner eine map1.json - Datei und eine enemies.json - Datei 
 wirft das Programm einen Fehler. Mithilfe dieser Dateien ist es theoretisch bereits möglich, eigene Karten
 mit eigenen Gegnern zu erstellen. Falls eine Anleitung dazu gewünscht ist, können wir diese gerne erstellen.
 Wir garantieren jedoch nur mit den mitgelieferten Standard-Dateien ein lauffähiges Programm.
-
-Sollten Bugs oder Ähnliches gefunden worden sein, bitte in folgendem Format schreiben:
-
-Bug : *Beschreibung*
-    : *Wie wird er ausgelöst*
-
-
-Rückmeldungen und Verbesserungen im Review Part schreiben, Bugs im Bug Part melden.
-Auch sprachliche Fehler o.ä. können im Bug Part gemeldet werden.
-
-
-Review:
-
-Bug:	
