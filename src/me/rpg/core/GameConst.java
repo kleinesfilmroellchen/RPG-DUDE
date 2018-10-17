@@ -10,7 +10,7 @@ import me.rpg.core.objects.Stats;
  * return things like ArrayLists and others that can't be expressed in a single
  * constant statement.
  * @author kleinesfilmröllchen
- * @version 0.0.0008
+ * @version 0.0.0009
  * @since 0.0.0004
  */
 public final class GameConst {
@@ -29,7 +29,7 @@ public final class GameConst {
 	 */
 	public static final double DEFENSE_MULTIPLIER = 2d;
 
-	public static final String VERSION = "0.0.0008";
+	public static final String VERSION = "0.0.0009";
 
 	/**
 	 * Contains all player level stats and returns them, if needed.

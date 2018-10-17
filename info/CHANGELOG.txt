@@ -42,6 +42,8 @@ Alpha Phase
 					Karte wird genutzt -> Bewegung nur möglich falls Räume Ausgänge haben
 					Spielerdaten werden aus Karte geladen
 					Vorbereitungen für geheime zukünftige Funktionen
+					
+0.0.0009a		In Arbeit!
 
 In Arbeit:
 	- Magiesystem (vermutlich 2 Stück)
