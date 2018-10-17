@@ -20,6 +20,8 @@ import json.JSONException;
  * @since 0.0.0001
  */
 public class RPG_MAIN {
+	
+	
 
 	// Variables
 	/** Scanner for easy text input access. */
