@@ -2,7 +2,7 @@ Ein riesiges Update für das Java RPG! Viel Spaß mit all den Änderungen!
 (Es tut uns leid dass ihr so lange warten musstet)
 Mehr Infos im Changelog...
 
-- v.0.0.0009a 
+- v.0.0.0008a 
 
 Ausführen mit cmd: java -jar RPG.jar oder einfach die Batch-Dateien verwenden!
 Argumente:

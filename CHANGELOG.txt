@@ -36,15 +36,12 @@ Alpha Phase
 <27.02.2018>		Erste Handbuchseiten geschrieben
 					Handbuchsuche
 
-0.0.0008a	 	Weitere Verbesserungen, Bugfixes, Textverbesserungen
+0.0.0008a	R 	Weitere Verbesserungen, Bugfixes, Textverbesserungen
 <27.02.2018>		Testdummys entfernt - kein "t" Befehl mehr
 					Gegner werden aus Karte geladen und im Spiel genutzt
 					Karte wird genutzt -> Bewegung nur möglich falls Räume Ausgänge haben
 					Spielerdaten werden aus Karte geladen
 					Vorbereitungen für geheime zukünftige Funktionen
-
-0.0.0009a	R	Es wurde ein Bug behoben, bei dem das Fortbewegen nach Norden und Süden unbegrenzt
-<11.10.2018>		möglich war.
 
 In Arbeit:
 	- Magiesystem (vermutlich 2 Stück)
