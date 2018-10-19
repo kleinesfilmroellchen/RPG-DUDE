@@ -1,7 +1,7 @@
 /**
- * A package containing many utility classes and functions. Created by Manuel Bertsch.
+ * A package containing many utility classes and functions. Created by kleinesfilmroellchen.
  * 
- * @author Manuel Bertsch
+ * @author kleinesfilmroellchen
  * @version 1.0
  */
 package utils;

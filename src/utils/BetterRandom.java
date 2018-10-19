@@ -7,7 +7,7 @@ import java.util.Random;
  * Uses the Mersenne Twister algorithm to get very good pseudo-random numbers.
  * See <a href="http://en.wikipedia.org/wiki/Mersenne_Twister">this Wikipedia article<a/> for more infos.
  * Parts of the C code there was ported to Java and used here.
- * @author Manuel Bertsch
+ * @author kleinesfilmroellchen
  * @since 0.0.0004
  * @version 0.0.0008
  *

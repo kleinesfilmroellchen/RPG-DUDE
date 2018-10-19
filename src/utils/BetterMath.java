@@ -5,7 +5,7 @@ package utils;
 /**
  * A class for all needed math functions that aren't supplied with the default
  * {@code Math} class.
- * @author Manuel Bertsch
+ * @author kleinesfilmroellchen
  * @see java.lang.Math Default math class
  * @since 0.0.0005
  * @version 0.0.0008
