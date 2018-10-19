@@ -149,6 +149,10 @@ public class RPG_MAIN {
 			}
 			switch (opt) {
 
+			case 'p':
+				println("Items aufnehmen ist bald verfügbar!");
+				break;
+			
 			case 'h':
 				println(Help.getHelp());
 				if (debug) println(Help.getDebugHelp());
@@ -173,15 +177,20 @@ public class RPG_MAIN {
 				break;
 
 			case 'u':
-				println(TextMessages._t("RPG_MAIN.20") + p.getX() + TextMessages._t("RPG_MAIN.|") + p.getY() //$NON-NLS-1$ //$NON-NLS-2$
-						+ TextMessages._t("RPG_MAIN.|") + p.getZ() + TextMessages._t("RPG_MAIN.23")); //$NON-NLS-1$ //$NON-NLS-2$
-				println(rooms[p.getZ()][p.getX()][p.getY()].roomName + TextMessages._t("RPG_MAIN.24") //$NON-NLS-1$
-						+ rooms[p.getZ()][p.getX()][p.getY()].roomDescription);
+				// player room
+				Room pr = rooms[p.getZ()][p.getX()][p.getY()];
+				// print a lot of info
+				println(((Coordinates) pr).toString());
+				println(pr.roomName + TextMessages._t("RPG_MAIN.24") + pr.roomDescription);
+				println((pr.walkIsAllowed(0, 1) ? "Du kannst nach Norden gehen.\n" : "") +
+						(pr.walkIsAllowed(0, -1) ? "Du kannst nach Süden gehen.\n" : "") +
+						(pr.walkIsAllowed(1, 0) ? "Du kannst nach Osten gehen.\n" : "") +
+						(pr.walkIsAllowed(-1, 0) ? "Du kannst nach Westen gehen.\n" : ""));
 
 				boolean seenSth = false;
 				for (Entity e : enemies) {
 					if (Coordinates.coordEqual(e, p)) {
-						println(TextMessages._t("RPG_MAIN.25") + e.name() + TextMessages._t("RPG_MAIN.26")); //$NON-NLS-1$ //$NON-NLS-2$
+						println(TextMessages._t("RPG_MAIN.25") + e.name() + TextMessages._t("RPG_MAIN.excl")); //$NON-NLS-1$ //$NON-NLS-2$
 						seenSth = true;
 					}
 				}

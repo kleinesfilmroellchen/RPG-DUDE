@@ -53,22 +53,21 @@ public final class Help {
 		
 		return "Debug Befehle:\n"
 				+ "(X)P           -  XP hinzufügen\n"
-				+ "(L)evel        -  Level setzen\n"
 				+ "(O)ne up       -  Level erhöhen mit Nachricht\n"
 				+ "(Z)Zusatzleben -  zusätzliche Lebenspunkte hinzufügen\n";
 	}
 	
 	public static final String gameInfo() {
-		return "JRPG - The Java Text-based Role Play Game.\n"
+		return "RPG-DUDE aka javaRPG - The Java Text-based Role Play Game.\n"
 				+ "Ein Programmierprojekt und Spiel von DJH und klfr.\n"
 				+ "Spielversion " + GameConst.VERSION + ".\n"
-				+ "Für weitere Informationen siehe \"LIESMICH\", \n"
+				+ "Für weitere Informationen siehe \"README\", \n"
 				+ "und für versionsbezogene Informationen siehe \"CHANGELOG\".\n"
 				+ "Es ist möglich das Handbuch zu öffnen, indem beim Spielstart das Kommandozeilenargument \"manual\" übergeben wird.\n\n"
-				+ "Das Werk und seine Teile sind urheberrechtlich geschützt.\n"
-				+ "Vervielfältigung ohne Angabe der Urheber, Modifikation, Aufführung,\n"
-				+ "Decompilation mithilfe jeglicher Tools sowie Missbrauch jeglicher Art\n"
-				+ "sind ohne Genehmigung der Urheber verboten und werden strafrechtlich verfolgt.\n"
-				+ "© 2017-2018.";
+				+ "Das Werk und seine Teile sind unter der GNU General Public Lizenz Version 3.0 lizensiert.\n"
+				+ "Eine Kopie der Lizenz liegt dem Quellcode bei und ist im Internet frei erhältlich.\n"
+				+ "Das Werk darf unter den Bedingungen der Lizenz verwendet werden, solange die Lizenz erhalten bleibt\n"
+				+ "und die Startbenachrichtigung sowie diese Information beibehalten werden.\n"
+				+ "Copyleft 2017-2018 kleinesfilmroellchen und DJH aka DarkLord17.";
 	}
 }

@@ -29,6 +29,29 @@ public final class GameConst {
 	 */
 	public static final double DEFENSE_MULTIPLIER = 2d;
 
+	/** Defence boost gained through leather armour and weapons. */
+	public static final int	LEATHER_DEF	= 2;
+	/** Defence boost gained through bronze armour and weapons. */
+	public static final int	BRONZE_DEF	= 3;
+	/** Defence boost gained through iron armour and weapons. */
+	public static final int	IRON_DEF		= 4;
+	/** Defence boost gained through silver armour and weapons. */
+	public static final int	SILVER_DEF	= 6;
+	/** Defence boost gained through magic-element armour and weapons. */
+	public static final int	MAGIC_DEF	= 10;
+
+	/**
+	 * Weight or mobility penalty for each unit of armour the player is wearing.
+	 * e.g. a 2 def armour will therefore normally have a weight of {@value} * 2.
+	 */
+	public static final double ARMOUR_WEIGHT = 0.2;
+
+	/**
+	 * Factor by which the item stats increase the sell value. e.g. a sword's damage
+	 * or an armour's defence.
+	 */
+	public static final int SELL_FACTOR = 10;
+
 	public static final String VERSION = "0.0.0009";
 
 	/**

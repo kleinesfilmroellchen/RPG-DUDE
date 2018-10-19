@@ -1,55 +1,82 @@
 {
-	"map-id": "1-1", 
-	"compatible-version": "0.0.0009", 
-	"room-matrix": 
-	[{
-			"floor": 0, 
-			"rooms": 
-			[[6, 7, 7, 7, 7, 7, 7, 5], [14, 15, 15, 15, 15, 15, 15, 13], [14, 15, 15, 15, 15, 15, 15, 13], [14, 15, 15, 15, 15, 15, 15, 13], [14, 15, 15, 15, 15, 15, 15, 13], [14, 15, 15, 15, 15, 15, 15, 13], [14, 15, 15, 15, 15, 15, 15, 13], [10, 11, 11, 11, 11, 11, 11, 9]]
-		}, {
-			"floor": 1, 
-			"rooms": 
-			[[6, 7, 7, 7, 7, 7, 7, 5], [14, 15, 15, 15, 15, 15, 15, 13], [14, 15, 15, 15, 15, 15, 15, 13], [14, 15, 15, 15, 15, 15, 15, 13], [14, 15, 15, 15, 15, 15, 15, 13], [14, 15, 15, 15, 15, 15, 15, 13], [14, 15, 15, 15, 15, 15, 15, 13], [10, 11, 11, 11, 11, 11, 11, 9]]
-		}], 
+   "map-id": "1-1",
+   "compatible-version": "0.0.0009",
+   "room-matrix": [{
+      "floor": 0,
+      "rooms": [
+         [6, 7, 7, 7, 7, 7, 7, 5],
+         [14, 13, 14, 15, 15, 15, 15, 13],
+         [14, 13, 14, 4, 15, 15, 15, 13],
+         [14, 13, 14, 12, 15, 15, 15, 13],
+         [14, 15, 3, 13, 15, 15, 15, 13],
+         [14, 13, 14, 12, 15, 15, 15, 13],
+         [14, 13, 14, 8, 15, 15, 15, 13],
+         [10, 11, 11, 11, 11, 11, 11, 9]
+      ]
+   }, {
+      "floor": 1,
+      "rooms": [
+         [6, 7, 7, 7, 7, 7, 7, 5],
+         [14, 15, 15, 15, 15, 15, 15, 13],
+         [14, 15, 15, 15, 15, 15, 15, 13],
+         [14, 15, 15, 15, 15, 15, 15, 13],
+         [14, 15, 15, 15, 15, 15, 15, 13],
+         [14, 15, 15, 15, 15, 15, 15, 13],
+         [14, 15, 15, 15, 15, 15, 15, 13],
+         [10, 11, 11, 11, 11, 11, 11, 9]
+      ]
+   }],
 
-	"room-descriptions": 
-	[{
-			"pos": 
-			[3, 4, 0], 
+   "room-descriptions": [{
+         "pos": [2, 4, 0],
+         "description": "Du stehst auf einem Waldweg. Um dich herum erheben sich die Bäume in die Höhe\n\fEin verschlungener Pfad bahnt sich seinen Weg nach Osten, wo eine Hütte zu sehen ist.\n\fIm Westen öffnet sich der Wald auf eine freie Fläche.",
+         "name": "Startraum"
+      },
+      {
+         "pos": [1, 4, 0],
+         "description": "Nach Osten beginnt der Weg, der in den Wald hineinführt, in alle anderen Himmelsrichtungen erstreckt sich eine freie Fläche.\n\fDer Waldeingang wird von einem Wächter bewacht.",
+         "name": "Eingang des Waldwegs"
+      },
+      {
+         "pos": [3, 4, 0],
+         "description": "Diese Hütte steht mitten im dunklen Wald, und das kommt dir ziemlich komisch vor.\n\fEs ist möglich, durch den Wald nach Norden oder Süden zu laufen.",
+         "name": "Mysteriöse Hütte"
+      },
+      {
+         "pos": [3, 5, 0],
+         "description": "Du befindest dich im dunklen Wald.",
+         "name": "Wald"
+      },
+      {
+         "pos": [3, 3, 0],
+         "description": "Du befindest dich im dunklen Wald.",
+         "name": "Wald"
+      }
 
-			"description": "Dies ist der Startraum. Hier bist du sicher!", 
-			"name": "Startraum"
-		}], 
+   ],
 
-	"enemies": 
-	[{
-			"id": "guard1", 
-			"pos": 
-			[4, 4, 0]
-		}, {
-			"id": "wildanimal", 
-			"pos": 
-			[5, 4, 0]
-		}, {
-			"id": "wildanimal", 
-			"pos": 
-			[5, 5, 0]
-		}, {
-			"id": "wildanimal", 
-			"pos": 
-			[6, 5, 0]
-		}], 
+   "enemies": [{
+      "id": "guard1",
+      "pos": [2, 4, 0]
+   }, {
+      "id": "wildanimal",
+      "pos": [4, 5, 0]
+   }, {
+      "id": "wildanimal",
+      "pos": [4, 3, 0]
+   }],
 
-	"items": 
-	[{
-			"id": "wood", 
-			"pos": 
-			[3, 4, 0]
-		}], 
+   "items": [{
+      "id": "wood",
+      "count": 3,
+      "pos": [3, 4, 0]
+   }, {
+      "id": "leather",
+      "count": 5,
+      "pos": [3, 4, 0]
+   }],
 
-	"playerdata": 
-	{
-		"start-pos": 
-		[3, 4, 0]
-	}
+   "playerdata": {
+      "start-pos": [2, 4, 0]
+   }
 }

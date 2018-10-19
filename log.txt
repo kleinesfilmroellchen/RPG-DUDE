@@ -1,0 +1,57 @@
+Wie lautet dein Name? Herzlich Willkommen, ficker, zu
+----- JRPG -----
+einem Spiel von DJH und klfr.
+Du spielst Version 0.0.0009.
+Dieses Programm und alle seine Teile sind unter der GPL Version 3.0 lizensiert.
+Nun denn, lasst uns beginnen...
+
+Welche Aktion möchtest du ausführen, ficker?
+Schreibe (H)ilfe, wenn du dir nicht sicher bist!
+Option_D: m
+
+In welche Richtung soll es gehen?
+(N)ord, (S)üd, (W)est oder (O)st?
+Option_D: f
+Diese Richtung gibt es nicht!
+Welche Aktion möchtest du ausführen, ficker?
+Schreibe (H)ilfe, wenn du dir nicht sicher bist!
+Option_D: u
+Startraum: ( 2 | 4 | 0 )
+Startraum: Du stehst auf einem Waldweg. Um dich herum erheben sich die BÃ¤ume in die HÃ¶he
+Ein verschlungener Pfad bahnt sich seinen Weg nach Osten, wo eine HÃ¼tte zu sehen ist.
+Im Westen Ã¶ffnet sich der Wald auf eine freie FlÃ¤che.
+Du kannst nach Osten gehen.
+Du kannst nach Westen gehen.
+
+Du siehst ein Waechter Level 1!
+
+Welche Aktion möchtest du ausführen, ficker?
+Schreibe (H)ilfe, wenn du dir nicht sicher bist!
+Option_D: m
+
+In welche Richtung soll es gehen?
+(N)ord, (S)üd, (W)est oder (O)st?
+Option_D: o
+Du begibst dich zu [3|4|0] : MysteriÃ¶se HÃ¼tte
+
+Welche Aktion möchtest du ausführen, ficker?
+Schreibe (H)ilfe, wenn du dir nicht sicher bist!
+Option_D: u
+MysteriÃ¶se HÃ¼tte: ( 3 | 4 | 0 )
+MysteriÃ¶se HÃ¼tte: Diese HÃ¼tte steht mitten im dunklen Wald, und das kommt dir ziemlich komisch vor.
+Es ist mÃ¶glich, durch den Wald nach Norden oder SÃ¼den zu laufen.
+Du kannst nach Norden gehen.
+Du kannst nach Süden gehen.
+Du kannst nach Westen gehen.
+
+Du siehst nichts...
+
+Welche Aktion möchtest du ausführen, ficker?
+Schreibe (H)ilfe, wenn du dir nicht sicher bist!
+Option_D: p
+
+Dieser Befehl existiert nicht! Probiere "M" oder "S", oder benutze die (H)ilfe!
+
+Welche Aktion möchtest du ausführen, ficker?
+Schreibe (H)ilfe, wenn du dir nicht sicher bist!
+Option_D: 

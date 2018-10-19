@@ -49,8 +49,10 @@ public class Room extends Coordinates {
 	/**
 	 * Checks whether a walk/move from this room is allowed or not, based on the
 	 * exits a room has.
-	 * @param xdir The movement in east/west direction in relation to this room
-	 * @param ydir The movement in north/south direction in relation to this room
+	 * @param xdir The movement in east +1 /west -1 direction in relation to this
+	 * room
+	 * @param ydir The movement in north +1/south -1 direction in relation to this
+	 * room
 	 * @return whether the walk is allowed, or false if both directions are
 	 * different from 0.
 	 */
@@ -133,6 +135,6 @@ public class Room extends Coordinates {
 	}
 
 	public String toString() {
-		return this.roomName + ": ( " + this.x + " | " + this.y + " | " + this.z + " )";
+		return this.roomName + ": " + super.toString();
 	}
 }
