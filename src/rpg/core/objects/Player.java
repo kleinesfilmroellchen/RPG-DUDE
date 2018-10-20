@@ -8,6 +8,7 @@ import rpg.core.RPG_MAIN;
 import rpg.core.objects.items.Abillity;
 import rpg.helpers.Functionality;
 import utils.BetterMath;
+import utils.FileBuffer;
 
 /**
  * The Player object. Currently only instantiated once.
@@ -82,7 +83,7 @@ public class Player extends Entity {
 
 		super();
 
-		JSONObject map = new JSONObject(Functionality.readFileContents(absolutePath));
+		JSONObject map = new JSONObject(FileBuffer.getContent(absolutePath));
 		try {
 			JSONArray posArray = map.getJSONObject("playerdata").getJSONArray("start-pos");
 			this.setCoords(posArray.getInt(0), posArray.getInt(1), posArray.getInt(2));

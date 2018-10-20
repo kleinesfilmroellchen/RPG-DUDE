@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import json.JSONException;
 import rpg.core.objects.*;
 import rpg.helpers.*;
+import utils.FileBuffer;
 
 // Symbols for copying: <>|
 
@@ -43,8 +44,8 @@ public class RPG_MAIN {
 	 */
 	private static Room[][][]			rooms;
 
-	/** Controls when log file is ready to be written to. */
-	public static volatile boolean logReady = false;
+	/** Signals that the asyncronous setup is ready. */
+	public static volatile boolean asyncReady = false;
 
 	/**
 	 * Main function.
@@ -60,10 +61,17 @@ public class RPG_MAIN {
 		Thread setupThread = new Thread(() -> {
 			// long time = System.currentTimeMillis();
 			Functionality.initGenerator();
-			File log = new File("log.txt");
 			try {
+				File log = FileBuffer.getFile("log.txt");
 				logger = new PrintStream(log);
-			} catch (FileNotFoundException e) {
+
+				rooms = Loaders.loadRoomsFromMap("map1.json");
+
+				loadEnemyPrefabs();
+				loadEnemiesFromMap();
+				Loaders.loadItemsInMap("map1.json", rooms);
+
+			} catch (IOException e) {
 				System.err.println(TextMessages._t("RPG_MAIN.1")); //$NON-NLS-1$
 				System.exit(1);
 			} catch (SecurityException e) {
@@ -71,20 +79,18 @@ public class RPG_MAIN {
 				System.exit(1);
 			}
 			logger.flush();
-			RPG_MAIN.logReady = true;
+			RPG_MAIN.asyncReady = true;
 			// System.out.println("Setup thread finished after " +
 			// (System.currentTimeMillis() - time) + " milliseconds.");
 		});
+		setupThread.setName("Setup Async");
 		setupThread.start();
 
 		//// Sync setup code
 		try {
 			// Argument checking
 			Stream<String> args = Arrays.stream(_args);
-			if (args.anyMatch(s -> {
-				if (s.equalsIgnoreCase("manual")) return true; //$NON-NLS-1$
-				return false;
-			})) {
+			if (args.anyMatch(s -> s.equalsIgnoreCase("manual"))) {
 				manual.ManualMain.manualInit();
 				System.exit(0);
 			}
@@ -92,29 +98,18 @@ public class RPG_MAIN {
 			// Tests arguments for at least one called "debug" and if so, sets debug
 			// automatically
 			args = Arrays.stream(_args);
-			debug = args.anyMatch(s -> {
-				if (s.equalsIgnoreCase("debug")) return true; //$NON-NLS-1$
-				return false;
-			});
+			debug = args.anyMatch(s -> s.equalsIgnoreCase("debug"));
 			// Tests arguments for log or logging and activates input/output logging
 			// automatically
 			args = Arrays.stream(_args);
-			logging = args.anyMatch(s -> {
-				if (s.equalsIgnoreCase("log") || s.equalsIgnoreCase("logging") || s.equalsIgnoreCase("logger")) return true; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				return false;
-			});
+			logging = args.anyMatch(
+					s -> s.equalsIgnoreCase("log") || s.equalsIgnoreCase("logging") || s.equalsIgnoreCase("logger"));
 
-			// Wait until logger file is ready
-			if (logging) while (!logReady) {
-			} ;
-
+			// Wait until async setup is ready
+			if (logging) while (!asyncReady);;
 			input.useDelimiter("\\p{javaWhitespace}+"); //$NON-NLS-1$
 
 			setupPlayer();
-			loadEnemyPrefabs();
-			loadEnemiesFromMap();
-
-			rooms = Loaders.loadRoomsFromMap(GameConst.absolutePath + "map1.json"); //$NON-NLS-1$
 
 		} catch (FileNotFoundException e) {
 			println(TextMessages._t("RPG_MAIN.10") + e.getMessage()); //$NON-NLS-1$
@@ -135,7 +130,7 @@ public class RPG_MAIN {
 			System.exit(1);
 		}
 
-		while (!logReady);
+		while (!asyncReady);
 
 		//////// Main game loop
 		do {
@@ -152,7 +147,7 @@ public class RPG_MAIN {
 			case 'p':
 				println("Items aufnehmen ist bald verfügbar!");
 				break;
-			
+
 			case 'h':
 				println(Help.getHelp());
 				if (debug) println(Help.getDebugHelp());
@@ -287,7 +282,7 @@ public class RPG_MAIN {
 	 * lookup table. Those are later used to create the real enemies.
 	 */
 	private static void loadEnemyPrefabs() throws JSONException, IOException {
-		ArrayList<Enemy> dict = Loaders.getEnemies(GameConst.absolutePath + "enemies.json"); //$NON-NLS-1$
+		ArrayList<Enemy> dict = Loaders.getEnemies("enemies.json"); //$NON-NLS-1$
 		enemyPrefabs = dict;
 	}
 
@@ -298,7 +293,7 @@ public class RPG_MAIN {
 	 * @throws IOException if something with I/O goes wrong.
 	 */
 	private static void loadEnemiesFromMap() throws JSONException, IOException {
-		RPG_MAIN.enemies = Loaders.loadEnemiesOnMap(GameConst.absolutePath + "map1.json", enemyPrefabs); //$NON-NLS-1$
+		RPG_MAIN.enemies = Loaders.loadEnemiesOnMap("map1.json", enemyPrefabs); //$NON-NLS-1$
 	}
 
 	/**
@@ -309,7 +304,7 @@ public class RPG_MAIN {
 	 */
 	private static void setupPlayer() throws JSONException, FileNotFoundException, IOException {
 		print(TextMessages._t("RPG_MAIN.45")); //$NON-NLS-1$
-		p = new Player(input.nextLine(), GameConst.P_BASE_LEVEL, GameConst.absolutePath + "map1.json"); //$NON-NLS-1$
+		p = new Player(input.nextLine(), GameConst.P_BASE_LEVEL, "map1.json"); //$NON-NLS-1$
 		p.futureStats = GameConst.requestPlayerLevels();
 
 		println(TextMessages._t("RPG_MAIN.47") + p.name() + TextMessages._t("RPG_MAIN.48") + GameConst.VERSION //$NON-NLS-1$ //$NON-NLS-2$

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import json.*;
 import rpg.core.objects.*;
+import utils.FileBuffer;
 import rpg.core.*;
 
 /**
@@ -20,7 +21,7 @@ public class Loaders {
 	 */
 	public static Room[][][] loadRoomsFromMap(String absolutePath) throws JSONException, FileNotFoundException,
 			IOException, NumberFormatException, ArrayIndexOutOfBoundsException {
-		JSONObject map = new JSONObject(Functionality.readFileContents(absolutePath));
+		JSONObject map = new JSONObject(FileBuffer.getContent(absolutePath));
 		// Map version doesn't equal this game's version
 		if (!map.getString("compatible-version").equalsIgnoreCase(GameConst.VERSION)) {
 			System.err.println(
@@ -101,7 +102,7 @@ public class Loaders {
 		File f = new File(absolutePath);
 		if (f.isDirectory()) throw new FileNotFoundException("File is a directory but must be a readable file");
 
-		JSONArray array = new JSONArray(Functionality.readFileContents(absolutePath));
+		JSONArray array = new JSONArray(FileBuffer.getContent(absolutePath));
 		ArrayList<Enemy> returner = new ArrayList<Enemy>(array.length());
 
 		for (int i = 0; i < array.length(); i++) {
@@ -157,7 +158,7 @@ public class Loaders {
 			throws JSONException, FileNotFoundException, IOException {
 		ArrayList<Enemy> returnEnemies = new ArrayList<Enemy>();
 
-		JSONArray enemies = new JSONObject(Functionality.readFileContents(absolutePath)).getJSONArray("enemies");
+		JSONArray enemies = new JSONObject(FileBuffer.getContent(absolutePath)).getJSONArray("enemies");
 		for (int i = 0; i < enemies.length(); i++) {
 			JSONObject enemyObj = enemies.getJSONObject(i);
 			// find an enemy in the dictionary that has the id of the current enemy
