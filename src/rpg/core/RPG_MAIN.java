@@ -180,7 +180,7 @@ public class RPG_MAIN {
 				println((pr.walkIsAllowed(0, 1) ? "Du kannst nach Norden gehen.\n" : "") +
 						(pr.walkIsAllowed(0, -1) ? "Du kannst nach Süden gehen.\n" : "") +
 						(pr.walkIsAllowed(1, 0) ? "Du kannst nach Osten gehen.\n" : "") +
-						(pr.walkIsAllowed(-1, 0) ? "Du kannst nach Westen gehen.\n" : ""));
+						(pr.walkIsAllowed(-1, 0) ? "Du kannst nach Westen gehen." : ""));
 
 				boolean seenSth = false;
 				for (Entity e : enemies) {
@@ -190,6 +190,14 @@ public class RPG_MAIN {
 					}
 				}
 				if (!seenSth) println(TextMessages._t("RPG_MAIN.27")); //$NON-NLS-1$
+
+				seenSth = false;
+				for (Item item : pr.items) {
+					println(String.format("Im Raum liegt %s.", item.getName()));
+					seenSth = true;
+				}
+				if (!seenSth) println("Du siehst kein Item..."); //$NON-NLS-1$
+
 				break;
 
 			case 'a':

@@ -208,7 +208,7 @@ public class Loaders {
 			int x = itemJson.getJSONArray("pos").getInt(0),
 					y = itemJson.getJSONArray("pos").getInt(1),
 					z = itemJson.getJSONArray("pos").getInt(2);
-			rooms[x][y][z].items.addAll(itemlist);
+			rooms[z][x][y].items.addAll(itemlist);
 		}
 	}
 }
