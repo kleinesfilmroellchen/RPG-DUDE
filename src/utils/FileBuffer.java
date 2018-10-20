@@ -9,7 +9,9 @@ import rpg.helpers.Functionality;
 
 /**
  * Stores previously accessed files and their contents.
- * @author malub
+ * @author kleinesfilmroellchen
+ * @version 0.0.0009
+ * @since 0.0.0009
  */
 public final class FileBuffer {
 
