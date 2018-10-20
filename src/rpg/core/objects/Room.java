@@ -1,5 +1,8 @@
 package rpg.core.objects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Stores information about a certain room.
  * @author kleinesfilmröllchen
@@ -25,6 +28,9 @@ public class Room extends Coordinates {
 	public String	roomName				= "Namenloser Raum";
 	/** The description for this room. */
 	public String	roomDescription	= "Keine Beschreibung für diesen Raum";
+
+	/** List of all items in this room. */
+	public List<Item> items = new ArrayList<>();
 
 	/**
 	 * Constructor which allows exits to all sides, but not up and down (open space

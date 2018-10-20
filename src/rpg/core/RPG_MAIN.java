@@ -298,7 +298,7 @@ public class RPG_MAIN {
 	 * @throws IOException if something with I/O goes wrong.
 	 */
 	private static void loadEnemiesFromMap() throws JSONException, IOException {
-		RPG_MAIN.enemies = Loaders.enemiesFromMap(GameConst.absolutePath + "map1.json", enemyPrefabs); //$NON-NLS-1$
+		RPG_MAIN.enemies = Loaders.loadEnemiesOnMap(GameConst.absolutePath + "map1.json", enemyPrefabs); //$NON-NLS-1$
 	}
 
 	/**

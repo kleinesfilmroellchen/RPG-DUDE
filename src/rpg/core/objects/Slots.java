@@ -9,8 +9,7 @@ import java.util.*;
  * @param <T> limiting item type, must be subclass of Item
  * @see rpg.core.objects.Item
  */
-@SuppressWarnings("rawtypes")
-public class Slots<T extends Item> implements Collection {
+public class Slots<T extends Item> implements Collection<Item> {
 
 	private List<Item> elements;
 
@@ -51,7 +50,7 @@ public class Slots<T extends Item> implements Collection {
 	}
 
 	@Override
-	public boolean add(Object e) {
+	public boolean add(Item e) {
 		if (this.isFull()) {
 			// No replacement found
 			throw new RuntimeException("Slots are full, no element can be added without replacement");
@@ -59,7 +58,7 @@ public class Slots<T extends Item> implements Collection {
 
 		for (Item elmt : this.elements) {
 			if (elmt == null) {
-				elmt = (Item) e;
+				elmt = e;
 				return true;
 			} else if (elmt.equals(e)) {
 				// already contains new element
@@ -103,14 +102,14 @@ public class Slots<T extends Item> implements Collection {
 	 * @return the replaced element, if any had to be replaced. If there wasn't an
 	 * element replaced, returns {@code null}.
 	 */
-	public Item addReplace(Object o, int idx) {
+	public Item addReplace(Item o, int idx) {
 		// Replacement required
 		if (this.isFull())
 			return this.elements.set(idx, (Item) o);
 		// Insert at first free position
 		else
 			for (Item elmt : this.elements) {
-				if (elmt == null) elmt = (Item) o;
+				if (elmt == null) elmt = o;
 			}
 
 		return null;
@@ -120,11 +119,42 @@ public class Slots<T extends Item> implements Collection {
 	 * Empties the Slots as by invocating the {@code clear} method and returns all
 	 * elements as an ArrayList.
 	 */
-	@SuppressWarnings("unchecked")
 	public ArrayList<Item> empty() {
-		ArrayList formerElmts = new ArrayList<Item>(this.elements);
+		ArrayList<Item> formerElmts = new ArrayList<Item>(this.elements);
 		this.elements.removeAll(elements);
 		return formerElmts;
+	}
+
+	/**
+	 * Checks whether all of the items of the collection are present in at least the
+	 * amount as in the collection.<br>
+	 * <br>
+	 * e.g. if {@code items} contains 3 "wood" items, only returns true if this also
+	 * has at least three "wood" items.<br>
+	 * <br>
+	 * Checking is always done against IDs.
+	 * @param items
+	 * @return
+	 */
+	public boolean hasAll(Collection<Item> items) {
+		ArrayList<Item> toFind = new ArrayList<>(items);
+		ArrayList<Item> lookup = new ArrayList<Item>(this);
+
+		for (int i = 0; i < toFind.size(); ++i) {
+			Item current = toFind.get(i);
+			// find everything in this slot that is the same item (ID) as the currently
+			// checked item
+			Iterator<Item> matching = lookup.stream().filter(item -> item.getID().equals(current.getID())).iterator();
+			if (!matching.hasNext()) {
+				// there is no item with that id found
+				return false;
+			} else {
+				// "use up" one item from the slot
+				lookup.remove(matching.next());
+			}
+		}
+		// every item of the items list was found
+		return true;
 	}
 
 	@Override
@@ -133,22 +163,42 @@ public class Slots<T extends Item> implements Collection {
 	}
 
 	@Override
-	@SuppressWarnings("unused")
 	public void clear() {
 		this.elements.clear();
 	}
 
-	// Necessary, but unused
-	public boolean containsAll(Collection c) {
-		return false;
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean containsAll(Collection<?> c) {
+		// checks if both collections have type argument T (extends Item)
+		return c.getClass().isAssignableFrom(this.getClass()) ? hasAll((Collection<Item>) c) : false;
 	}
 
+	@Override
 	public boolean addAll(Collection c) {
 		return false;
 	}
 
-	public boolean removeAll(Collection c) {
-		return false;
+	public boolean removeAll(Collection<?> c) {
+		if (!c.getClass().isAssignableFrom(this.getClass())) return false;
+
+		ArrayList<Item> toRemove = new ArrayList<Item>((Collection<Item>) c);
+
+		for (int i = 0; i < toRemove.size(); ++i) {
+			Item current = toRemove.get(i);
+			// find everything in this slot that is the same item (ID) as the currently
+			// checked item
+			Iterator<Item> matching = this.stream().filter(item -> item.getID().equals(current.getID())).iterator();
+			if (!matching.hasNext()) {
+				// there is no item with that id found
+				return false;
+			} else {
+				// "use up" one item from the slot
+				this.remove(matching.next());
+			}
+		}
+		// every item of the items list was found
+		return true;
 	}
 
 	public boolean retainAll(Collection c) {
@@ -156,7 +206,7 @@ public class Slots<T extends Item> implements Collection {
 	}
 
 	// Returners
-	public Iterator iterator() {
+	public Iterator<Item> iterator() {
 		return this.elements.iterator();
 	}
 
@@ -164,7 +214,7 @@ public class Slots<T extends Item> implements Collection {
 		return this.elements.toArray();
 	}
 
-	public Object[] toArray(Object[] a) {
-		return (Object[]) this.toArray();
+	public Item[] toArray(Object[] a) {
+		return (Item[]) this.toArray();
 	}
 }

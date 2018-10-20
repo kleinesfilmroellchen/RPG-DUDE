@@ -19,10 +19,13 @@ public class Armour implements Item {
 	private double	weight;
 	private String	name;
 
-	public Armour(int protection, double weight, String name) {
+	private String id;
+
+	public Armour(int protection, double weight, String name, String id) {
 		this.weight = weight;
 		this.protection = protection;
 		this.name = name;
+		this.id = id;
 	}
 
 	@Override
@@ -67,6 +70,11 @@ public class Armour implements Item {
 		}
 		player.armour.add(this);
 		return State.finished;
+	}
+
+	@Override
+	public String getID() {
+		return id;
 	}
 
 }
