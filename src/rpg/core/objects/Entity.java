@@ -1,6 +1,7 @@
 package rpg.core.objects;
 
 import rpg.core.*;
+import rpg.local.TextMessages;
 
 /**
  * The abstract superclass for all movable, attackable and interactable objects in the game,
@@ -80,7 +81,7 @@ public abstract class Entity extends Coordinates {
 	 * The general contract of this function is that it deals damage to the entity according to the game fight rules.
 	 * The method template represents the "normal" way of taking damage while defending.
 	 * @param dmg The damage to be taken by the Entity.
-	 * @return The actual damage applied, can be used for display, further calculations etc.
+	 * @return The actual damage applied.
 	 * @see rpg.core.Entity#takeDamage(int) takeDamage()
 	 */
 	
@@ -105,17 +106,15 @@ public abstract class Entity extends Coordinates {
 	
 	/**
 	 * Attacks the given other entity and deals damage to it. (Replaces attackDummy in favor of a generic function)
-	 * @param enemy The test dummy to be attacked
-	 * @param callerOut The output stream for fight information
-	 * @return whether the dummy was killed or not, can be used by the caller.
+	 * @param enemy The Entity to be attacked.
 	 */
 	public void attack(Entity enemy) {
-		RPG_MAIN.println(this.name() +" greift " + enemy.name() + " an...");
-		if(enemy.usesDefence) RPG_MAIN.println(enemy.name() + " verteidigt sich!");
+		RPG_MAIN.printfln(TextMessages._t("msg.game.attacks"), this.name(), enemy.name());
+		if(enemy.usesDefence) RPG_MAIN.printfln(TextMessages._t("msg.game.defending"), enemy.name());
 		
 		int damageTaken = enemy.usesDefence ? enemy.takeDefDamage(this.atk) : enemy.takeDamage(this.atk);
-		RPG_MAIN.println(enemy.name() + " nimmt " + damageTaken + " Schaden!" + 
-							(damageTaken == 0 ? " Der Angriff war nutzlos!" : ""));
+		RPG_MAIN.printf(TextMessages._t("msg.game.takesdamage"), enemy.name(), damageTaken); 
+		RPG_MAIN.printfln(damageTaken == 0 ? TextMessages._t("msg.game.attackuseless") : "");
 	}
 	
 	/**Checks whether the entity is dead.*/

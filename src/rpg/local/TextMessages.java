@@ -26,7 +26,7 @@ public class TextMessages {
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {
-			return "!---MISSING please contact developers---" + key + '!';
+			return '!' + key + '!';
 		}
 	}
 	

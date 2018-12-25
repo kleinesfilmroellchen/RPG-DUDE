@@ -298,11 +298,9 @@ public class RPG_MAIN {
 
 		} while (true);
 	}
-	
+
 	private static String __(String lookup) {
-		if (debug) {
-			return lookup + ": " + TextMessages._t(lookup);
-		}
+		if (debug) { return lookup + ": " + TextMessages._t(lookup); }
 		return TextMessages._t(lookup);
 	}
 
@@ -379,7 +377,7 @@ public class RPG_MAIN {
 
 			case 's':
 				// Stats: ask player once more for action
-				println(p.statString() + System.lineSeparator()); //$NON-NLS-1$
+				println(p.statString() + System.lineSeparator()); // $NON-NLS-1$
 				println(e.statString());
 				continue;
 
@@ -419,19 +417,18 @@ public class RPG_MAIN {
 
 			// Exit conditions
 			if (p.isDead()) {
-				println(__("RPG_MAIN.66") + p.name() + __("RPG_MAIN.67")); //$NON-NLS-1$ //$NON-NLS-2$
+				printfln(__("msg.game.defeated"), p.name()); //$NON-NLS-1$ //$NON-NLS-2$
 				p.resetToBaseStats();
 				break;
 			}
 			if (e.isDead()) {
-				println(e.name() + __("RPG_MAIN.68") + p.name() + __("RPG_MAIN.69") //$NON-NLS-1$ //$NON-NLS-2$
-						+ p.name() + __("RPG_MAIN.70") + e.reward + __("RPG_MAIN.71")); //$NON-NLS-1$ //$NON-NLS-2$
+				printfln(__("msg.game.defeating"), e.name(), p.name(), p.name(), e.reward); //$NON-NLS-1$ //$NON-NLS-2$
 				p.addExp(e.reward);
 				break;
 			}
 		}
 
-		println(__("RPG_MAIN.72")); //$NON-NLS-1$
+		println(__("msg.game.battleend")); //$NON-NLS-1$
 	}
 
 	/**
@@ -440,7 +437,7 @@ public class RPG_MAIN {
 	 * @throws IOException
 	 */
 	public static void askForMovement() throws IOException {
-		print(__("RPG_MAIN.dirRequest")); //$NON-NLS-1$
+		print(__("msg.select.dir")); //$NON-NLS-1$
 		byte x = 0, y = 0;
 		char dir = getOpt();
 		switch (dir) {
@@ -457,22 +454,18 @@ public class RPG_MAIN {
 			x = 1;
 			break;
 		default:
-			print(__("RPG_MAIN.noSuchDir")); //$NON-NLS-1$
+			print(__("msg.error.nosuchdir")); //$NON-NLS-1$
 			return;
 		}
 
 		// Checks whether there is an exit in the given direction
 		if (rooms[p.getZ()][p.getX()][p.getY()].walkIsAllowed(x, y)) {
 			p.add(x, y, 0);
-			println(__("RPG_MAIN.movesto1") + p.getX() + __("msg.|") + p.getY()
-					+ __("msg.|") + p.getZ() + __("RPG_MAIN.movesto2")
-					+ rooms[p.getZ()][p.getX()][p.getY()].roomName);
+			printfln(__("msg.game.moveto"), p.getX(), p.getY(), p.getZ(), rooms[p.getZ()][p.getX()][p.getY()].roomName);
 		} else {
-			println(__("RPG_MAIN.75") //$NON-NLS-1$
-					+ (dir == 'n' ? __("RPG_MAIN.76") //$NON-NLS-1$
-							: dir == 's' ? __("RPG_MAIN.77") //$NON-NLS-1$
-									: dir == 'o' ? __("RPG_MAIN.78") : __("RPG_MAIN.79")) //$NON-NLS-1$ //$NON-NLS-2$
-					+ __("msg.excl")); //$NON-NLS-1$
+			printfln(__("msg.error.noexit"), (dir == 'n' ? __("msg.game.north") //$NON-NLS-1$
+					: dir == 's' ? __("msg.game.south") //$NON-NLS-1$
+							: dir == 'o' ? __("msg.game.east") : __("msg.game.west"))); //$NON-NLS-1$
 		}
 	}
 
@@ -488,9 +481,9 @@ public class RPG_MAIN {
 			try {
 				opt = input.next().toLowerCase().charAt(0);
 			} catch (InputMismatchException e) {
-				println(__("RPG_MAIN.83")); //$NON-NLS-1$
+				println(__("msg.error.invalidchar")); //$NON-NLS-1$
 			} catch (StringIndexOutOfBoundsException e) {
-				println(__("RPG_MAIN.84")); //$NON-NLS-1$
+				println(__("msg.error.insufficientlength")); //$NON-NLS-1$
 			}
 		} while (!Character.isLetter(opt));
 
@@ -515,7 +508,7 @@ public class RPG_MAIN {
 				i = Integer.parseInt(in);
 				break;
 			} catch (NumberFormatException e) {
-				print(__("RPG_MAIN.88")); //$NON-NLS-1$
+				print(__("msg.error.nonumber")); //$NON-NLS-1$
 			}
 		} while (i == Integer.MAX_VALUE);
 
@@ -541,7 +534,7 @@ public class RPG_MAIN {
 				i = Float.parseFloat(in);
 				break;
 			} catch (NumberFormatException e) {
-				print(__("RPG_MAIN.91")); //$NON-NLS-1$
+				print(__("msg.error.nonumber")); //$NON-NLS-1$
 			}
 		} while (i == Integer.MAX_VALUE);
 
@@ -577,11 +570,11 @@ public class RPG_MAIN {
 		}
 	}
 
-	private static void printf(String s, Object... args) {
+	public static void printf(String s, Object... args) {
 		print(String.format(s, args));
 	}
 
-	private static void printfln(String s, Object... args) {
+	public static void printfln(String s, Object... args) {
 		println(String.format(s, args));
 	}
 
