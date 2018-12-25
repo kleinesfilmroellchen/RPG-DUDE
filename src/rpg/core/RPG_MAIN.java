@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import json.JSONException;
 import rpg.core.objects.*;
 import rpg.helpers.*;
+import rpg.local.TextMessages;
 import utils.FileBuffer;
 
 // Symbols for copying: <>|
@@ -54,6 +55,7 @@ public class RPG_MAIN {
 	 */
 	public static void main(String[] _args) throws IOException {
 		//// Test code belongs here
+		System.out.println(Locale.GERMAN.getLanguage());
 
 		//// Async setup code: time consuming stuff belongs into this method.
 		// That stuff is executed on a separate thread without blocking the main program
@@ -72,10 +74,10 @@ public class RPG_MAIN {
 				Loaders.loadItemsInMap("map1.json", rooms);
 
 			} catch (IOException e) {
-				System.err.println(TextMessages._t("RPG_MAIN.1")); //$NON-NLS-1$
+				System.err.println(__("msg.error.loggercreate")); //$NON-NLS-1$
 				System.exit(1);
 			} catch (SecurityException e) {
-				System.err.println(TextMessages._t("RPG_MAIN.2")); //$NON-NLS-1$
+				System.err.println(__("msg.error.writepermission")); //$NON-NLS-1$
 				System.exit(1);
 			}
 			logger.flush();
@@ -112,40 +114,40 @@ public class RPG_MAIN {
 			setupPlayer();
 
 		} catch (FileNotFoundException e) {
-			println(TextMessages._t("RPG_MAIN.10") + e.getMessage()); //$NON-NLS-1$
+			println(__("msg.error.fnf") + e.getMessage()); //$NON-NLS-1$
 			println(Arrays.toString(e.getStackTrace()));
 			System.exit(1);
 		} catch (JSONException e) {
 			println(e.getMessage());
-			println(TextMessages._t("RPG_MAIN.11")); //$NON-NLS-1$
+			println(__("msg.error.json")); //$NON-NLS-1$
 			println(Arrays.toString(e.getStackTrace()));
-			System.exit(1);
+			System.exit(2);
 		} catch (NumberFormatException e) {
-			println(TextMessages._t("RPG_MAIN.12")); //$NON-NLS-1$
+			println(__("msg.error.numberformat")); //$NON-NLS-1$
 			println(Arrays.toString(e.getStackTrace()));
-			System.exit(1);
+			System.exit(3);
 		} catch (Exception e) {
-			println(TextMessages._t("RPG_MAIN.13")); //$NON-NLS-1$
+			println(__("msg.error.unknown")); //$NON-NLS-1$
 			println(Arrays.toString(e.getStackTrace()));
-			System.exit(1);
+			System.exit(4);
 		}
 
 		while (!asyncReady);
 
 		//////// Main game loop
 		do {
-			println(TextMessages._t("RPG_MAIN.actionRequest1") + p.name() + TextMessages._t("RPG_MAIN.actionRequest2")); //$NON-NLS-1$ //$NON-NLS-2$
+			printfln(__("msg.select.action"), p.name()); //$NON-NLS-1$ //$NON-NLS-2$
 			char opt = getOpt();
 
 			if (opt == 'e') {
-				println(TextMessages._t("RPG_MAIN.exit") + p.name() + TextMessages._t("RPG_MAIN.excl")); //$NON-NLS-1$ //$NON-NLS-2$
+				printfln(__("msg.exit"), p.name()); //$NON-NLS-1$ //$NON-NLS-2$
 				logger.close();
 				break;
 			}
 			switch (opt) {
 
 			case 'p':
-				println("Items aufnehmen ist bald verfügbar!");
+				println(__("msg.itemdisclaimer"));
 				break;
 
 			case 'h':
@@ -163,9 +165,9 @@ public class RPG_MAIN {
 
 			case 'l':
 				if (!logging) {
-					println(TextMessages._t("RPG_MAIN.18")); //$NON-NLS-1$
+					println(__("msg.logenable")); //$NON-NLS-1$
 				} else {
-					println(TextMessages._t("RPG_MAIN.19")); //$NON-NLS-1$
+					println(__("msg.logdisable")); //$NON-NLS-1$
 					logger.flush();
 				}
 				logging = !logging;
@@ -176,27 +178,41 @@ public class RPG_MAIN {
 				Room pr = rooms[p.getZ()][p.getX()][p.getY()];
 				// print a lot of info
 				println(((Coordinates) pr).toString());
-				println(pr.roomName + TextMessages._t("RPG_MAIN.24") + pr.roomDescription);
-				println((pr.walkIsAllowed(0, 1) ? "Du kannst nach Norden gehen.\n" : "") +
-						(pr.walkIsAllowed(0, -1) ? "Du kannst nach Süden gehen.\n" : "") +
-						(pr.walkIsAllowed(1, 0) ? "Du kannst nach Osten gehen.\n" : "") +
-						(pr.walkIsAllowed(-1, 0) ? "Du kannst nach Westen gehen." : ""));
+				printfln(__("msg.game.lookroom"), pr.getX(), pr.getY(), pr.getZ(), pr.roomName,
+						pr.roomDescription);
+				println(
+						(pr.walkIsAllowed(0, 1) ? String.format(__("msg.game.canwalk") + System.lineSeparator(),
+								__("msg.game.north")) : "") +
+								(pr.walkIsAllowed(0, -1)
+										? String.format(__("msg.game.canwalk") + System.lineSeparator(),
+												__("msg.game.south"))
+										: "")
+								+
+								(pr.walkIsAllowed(1, 0)
+										? String.format(__("msg.game.canwalk") + System.lineSeparator(),
+												__("msg.game.east"))
+										: "")
+								+
+								(pr.walkIsAllowed(-1, 0)
+										? String.format(__("msg.game.canwalk") + System.lineSeparator(),
+												__("msg.game.west"))
+										: ""));
 
 				boolean seenSth = false;
 				for (Entity e : enemies) {
 					if (Coordinates.coordEqual(e, p)) {
-						println(TextMessages._t("RPG_MAIN.25") + e.name() + TextMessages._t("RPG_MAIN.excl")); //$NON-NLS-1$ //$NON-NLS-2$
+						printfln(__("msg.game.see"), e.name()); //$NON-NLS-1$ //$NON-NLS-2$
 						seenSth = true;
 					}
 				}
-				if (!seenSth) println(TextMessages._t("RPG_MAIN.27")); //$NON-NLS-1$
+				if (!seenSth) println(__("msg.game.seenothing")); //$NON-NLS-1$
 
 				seenSth = false;
 				for (Item item : pr.items) {
-					println(String.format("Im Raum liegt %s.", item.getName()));
+					printfln(__("msg.game.iteminroom"), item.getName());
 					seenSth = true;
 				}
-				if (!seenSth) println("Du siehst kein Item..."); //$NON-NLS-1$
+				if (!seenSth) println(__("msg.game.noitem")); //$NON-NLS-1$
 
 				break;
 
@@ -207,7 +223,7 @@ public class RPG_MAIN {
 				if (inRoom.size() > 0) {
 					for (int i = 0; i < inRoom.size(); i++) {
 						Enemy e = inRoom.get(i);
-						println(TextMessages._t("RPG_MAIN.28") + e.name() + TextMessages._t("RPG_MAIN.29")); //$NON-NLS-1$ //$NON-NLS-2$
+						printfln(__("msg.select.attack"), e.name()); //$NON-NLS-1$ //$NON-NLS-2$
 						char selection = getOpt();
 
 						if (selection == 'y' || selection == 'j') {
@@ -219,14 +235,14 @@ public class RPG_MAIN {
 								enemies.remove(i);
 							}
 							if (p.isDead()) {
-								println(TextMessages._t("RPG_MAIN.30") + p.name() + TextMessages._t("RPG_MAIN.31")); //$NON-NLS-1$ //$NON-NLS-2$
+								printfln(__("msg.game.defeat"), p.name()); //$NON-NLS-1$ //$NON-NLS-2$
 								p.resetToBaseStats();
 							}
 							break;
 						}
 					}
 				} else
-					println(TextMessages._t("RPG_MAIN.32")); //$NON-NLS-1$
+					println(__("msg.game.noattackable")); //$NON-NLS-1$
 				break;
 
 			case 'i':
@@ -236,53 +252,58 @@ public class RPG_MAIN {
 			case 'd':
 				if (debug) {
 					debug = false;
-					println(TextMessages._t("RPG_MAIN.33")); //$NON-NLS-1$
+					println(__("msg.debugdisable")); //$NON-NLS-1$
 				} else {
 					debug = true;
-					println(TextMessages._t("RPG_MAIN.34")); //$NON-NLS-1$
+					println(__("msg.debugenable")); //$NON-NLS-1$
 				}
 				break;
 
 			case 'x':
 				if (debug) {
-					println(TextMessages._t("RPG_MAIN.35")); //$NON-NLS-1$
-					p.addExp(input.nextInt());
+					println(__("msg.debug.xp")); //$NON-NLS-1$
+					p.addExp(getInt());
 				} else {
-					println(TextMessages._t("RPG_MAIN.36")); //$NON-NLS-1$
+					println(__("msg.debuginactive")); //$NON-NLS-1$
 				}
 				break;
 
 			case 'o':
 				if (debug) {
-
-					println(TextMessages._t("RPG_MAIN.37")); //$NON-NLS-1$
-					println(TextMessages._t("RPG_MAIN.38")); //$NON-NLS-1$
+					println(__("msg.debug.lvl")); //$NON-NLS-1$
 					int extraLevels = getInt();
 					for (int i = 0; i < extraLevels; i++) {
 						p.addExp(p.necessaryXP());
 						if (p.maxedOut) break;
 					}
 				} else {
-					println(TextMessages._t("RPG_MAIN.39")); //$NON-NLS-1$
+					println(__("msg.debuginactive")); //$NON-NLS-1$
 				}
 				break;
 
 			case 'z':
 				if (debug) {
-					println(TextMessages._t("RPG_MAIN.40")); //$NON-NLS-1$
+					println(__("msg.debug.hp")); //$NON-NLS-1$
 					int h = getInt();
 					p.addHealth(h);
 				} else {
-					println(TextMessages._t("RPG_MAIN.41")); //$NON-NLS-1$
+					println(__("msg.debuginactive")); //$NON-NLS-1$
 				}
 				break;
 
 			default:
-				println(TextMessages._t("RPG_MAIN.42")); //$NON-NLS-1$
+				println(__("msg.error.unknowncmd")); //$NON-NLS-1$
 				break;
 			}
 
 		} while (true);
+	}
+	
+	private static String __(String lookup) {
+		if (debug) {
+			return lookup + ": " + TextMessages._t(lookup);
+		}
+		return TextMessages._t(lookup);
 	}
 
 	/**
@@ -311,12 +332,11 @@ public class RPG_MAIN {
 	 * @throws JSONException
 	 */
 	private static void setupPlayer() throws JSONException, FileNotFoundException, IOException {
-		print(TextMessages._t("RPG_MAIN.45")); //$NON-NLS-1$
+		print(__("msg.select.name")); //$NON-NLS-1$
 		p = new Player(input.nextLine(), GameConst.P_BASE_LEVEL, "map1.json"); //$NON-NLS-1$
 		p.futureStats = GameConst.requestPlayerLevels();
 
-		println(TextMessages._t("RPG_MAIN.47") + p.name() + TextMessages._t("RPG_MAIN.48") + GameConst.VERSION //$NON-NLS-1$ //$NON-NLS-2$
-				+ TextMessages._t("RPG_MAIN.49")); //$NON-NLS-1$
+		printfln(__("msg.splashscreen"), p.name(), GameConst.VERSION); //$NON-NLS-1$
 	}
 
 	/**
@@ -327,8 +347,7 @@ public class RPG_MAIN {
 	 * @throws IOException
 	 */
 	public static void battle(Enemy e, Player p) throws IOException {
-		println(TextMessages._t("RPG_MAIN.nl") + p.name() + TextMessages._t("RPG_MAIN.51") + e.name() //$NON-NLS-1$ //$NON-NLS-2$
-				+ TextMessages._t("RPG_MAIN.52")); //$NON-NLS-1$
+		printfln(__("msg.game.battlestart"), p.name(), e.name()); //$NON-NLS-1$
 
 		boolean flightSuccessful = false;
 		while (true) {
@@ -339,7 +358,7 @@ public class RPG_MAIN {
 			if (flightSuccessful) break;
 
 			// Player fight decisions
-			println(TextMessages._t("RPG_MAIN.nl") + p.name() + TextMessages._t("RPG_MAIN.54")); //$NON-NLS-1$ //$NON-NLS-2$
+			printfln(__("msg.game.inbattle"), p.name()); //$NON-NLS-1$ //$NON-NLS-2$
 			char playerAction = getOpt();
 
 			switch (playerAction) {
@@ -360,59 +379,59 @@ public class RPG_MAIN {
 
 			case 's':
 				// Stats: ask player once more for action
-				println(p.statString() + TextMessages._t("RPG_MAIN.nl")); //$NON-NLS-1$
+				println(p.statString() + System.lineSeparator()); //$NON-NLS-1$
 				println(e.statString());
 				continue;
 
 			// All not implemented or invalid actions
 			case 'i':
-				println(TextMessages._t("RPG_MAIN.56")); //$NON-NLS-1$
+				println(__("msg.itemdisclaimer")); //$NON-NLS-1$
 				continue;
 
 			case 'm':
-				println(TextMessages._t("RPG_MAIN.57")); //$NON-NLS-1$
+				println(__("msg.magicdisclaimer")); //$NON-NLS-1$
 				continue;
 
 			case 'f':
 				// Flight attempt
-				println(p.name() + TextMessages._t("RPG_MAIN.58")); //$NON-NLS-1$
+				printfln(__("msg.game.tryflee"), p.name()); //$NON-NLS-1$
 				flightSuccessful = Functionality.fleeAttempt(p.mob, e.mob);
 				if (flightSuccessful) {
-					println(TextMessages._t("RPG_MAIN.59")); //$NON-NLS-1$
+					println(__("msg.game.couldflee")); //$NON-NLS-1$
 					// skipping enemy attack and essentially ending fight
 					continue;
 				}
 				// unsuccessful flight: player doesn't get to attack
 				else
-					println(TextMessages._t("RPG_MAIN.60")); //$NON-NLS-1$
+					println(__("msg.game.couldnotflee")); //$NON-NLS-1$
 				playerAttack = false;
 				break;
 
 			default:
-				println(TextMessages._t("RPG_MAIN.61")); //$NON-NLS-1$
+				println(__("msg.error.unknowncmd")); //$NON-NLS-1$
 				continue;
 			}
 
 			if (!p.usesDefence && playerAttack) p.attack(e);
-			if (debug) println(e.def + TextMessages._t("RPG_MAIN.62") + p.atk + TextMessages._t("RPG_MAIN.63") + e.health); //$NON-NLS-1$ //$NON-NLS-2$
+			if (debug) printfln(__("msg.debug.attackpe"), e.def, p.atk, e.health); //$NON-NLS-1$ //$NON-NLS-2$
 			if (!e.usesDefence) e.attack(p);
-			if (debug) println(p.def + TextMessages._t("RPG_MAIN.64") + e.atk + TextMessages._t("RPG_MAIN.65") + p.health); //$NON-NLS-1$ //$NON-NLS-2$
+			if (debug) printfln(__("msg.debug.attackep"), p.def, e.atk, p.health); //$NON-NLS-1$ //$NON-NLS-2$
 
 			// Exit conditions
 			if (p.isDead()) {
-				println(TextMessages._t("RPG_MAIN.66") + p.name() + TextMessages._t("RPG_MAIN.67")); //$NON-NLS-1$ //$NON-NLS-2$
+				println(__("RPG_MAIN.66") + p.name() + __("RPG_MAIN.67")); //$NON-NLS-1$ //$NON-NLS-2$
 				p.resetToBaseStats();
 				break;
 			}
 			if (e.isDead()) {
-				println(e.name() + TextMessages._t("RPG_MAIN.68") + p.name() + TextMessages._t("RPG_MAIN.69") //$NON-NLS-1$ //$NON-NLS-2$
-						+ p.name() + TextMessages._t("RPG_MAIN.70") + e.reward + TextMessages._t("RPG_MAIN.71")); //$NON-NLS-1$ //$NON-NLS-2$
+				println(e.name() + __("RPG_MAIN.68") + p.name() + __("RPG_MAIN.69") //$NON-NLS-1$ //$NON-NLS-2$
+						+ p.name() + __("RPG_MAIN.70") + e.reward + __("RPG_MAIN.71")); //$NON-NLS-1$ //$NON-NLS-2$
 				p.addExp(e.reward);
 				break;
 			}
 		}
 
-		println(TextMessages._t("RPG_MAIN.72")); //$NON-NLS-1$
+		println(__("RPG_MAIN.72")); //$NON-NLS-1$
 	}
 
 	/**
@@ -421,7 +440,7 @@ public class RPG_MAIN {
 	 * @throws IOException
 	 */
 	public static void askForMovement() throws IOException {
-		print(TextMessages._t("RPG_MAIN.dirRequest")); //$NON-NLS-1$
+		print(__("RPG_MAIN.dirRequest")); //$NON-NLS-1$
 		byte x = 0, y = 0;
 		char dir = getOpt();
 		switch (dir) {
@@ -438,22 +457,22 @@ public class RPG_MAIN {
 			x = 1;
 			break;
 		default:
-			print(TextMessages._t("RPG_MAIN.noSuchDir")); //$NON-NLS-1$
+			print(__("RPG_MAIN.noSuchDir")); //$NON-NLS-1$
 			return;
 		}
 
 		// Checks whether there is an exit in the given direction
 		if (rooms[p.getZ()][p.getX()][p.getY()].walkIsAllowed(x, y)) {
 			p.add(x, y, 0);
-			println(TextMessages._t("RPG_MAIN.movesto1") + p.getX() + TextMessages._t("RPG_MAIN.|") + p.getY()
-					+ TextMessages._t("RPG_MAIN.|") + p.getZ() + TextMessages._t("RPG_MAIN.movesto2")
+			println(__("RPG_MAIN.movesto1") + p.getX() + __("msg.|") + p.getY()
+					+ __("msg.|") + p.getZ() + __("RPG_MAIN.movesto2")
 					+ rooms[p.getZ()][p.getX()][p.getY()].roomName);
 		} else {
-			println(TextMessages._t("RPG_MAIN.75") //$NON-NLS-1$
-					+ (dir == 'n' ? TextMessages._t("RPG_MAIN.76") //$NON-NLS-1$
-							: dir == 's' ? TextMessages._t("RPG_MAIN.77") //$NON-NLS-1$
-									: dir == 'o' ? TextMessages._t("RPG_MAIN.78") : TextMessages._t("RPG_MAIN.79")) //$NON-NLS-1$ //$NON-NLS-2$
-					+ TextMessages._t("RPG_MAIN.excl")); //$NON-NLS-1$
+			println(__("RPG_MAIN.75") //$NON-NLS-1$
+					+ (dir == 'n' ? __("RPG_MAIN.76") //$NON-NLS-1$
+							: dir == 's' ? __("RPG_MAIN.77") //$NON-NLS-1$
+									: dir == 'o' ? __("RPG_MAIN.78") : __("RPG_MAIN.79")) //$NON-NLS-1$ //$NON-NLS-2$
+					+ __("msg.excl")); //$NON-NLS-1$
 		}
 	}
 
@@ -465,13 +484,13 @@ public class RPG_MAIN {
 	public static char getOpt() throws IOException {
 		char opt = '9';
 		do {
-			print(debug ? TextMessages._t("RPG_MAIN.81") : TextMessages._t("RPG_MAIN.sel")); //$NON-NLS-1$ //$NON-NLS-2$
+			print(debug ? __("msg.debug.char") : __("msg.select.char")); //$NON-NLS-1$ //$NON-NLS-2$
 			try {
 				opt = input.next().toLowerCase().charAt(0);
 			} catch (InputMismatchException e) {
-				println(TextMessages._t("RPG_MAIN.83")); //$NON-NLS-1$
+				println(__("RPG_MAIN.83")); //$NON-NLS-1$
 			} catch (StringIndexOutOfBoundsException e) {
-				println(TextMessages._t("RPG_MAIN.84")); //$NON-NLS-1$
+				println(__("RPG_MAIN.84")); //$NON-NLS-1$
 			}
 		} while (!Character.isLetter(opt));
 
@@ -487,7 +506,7 @@ public class RPG_MAIN {
 	 * @throws IOException
 	 */
 	public static int getInt() throws IOException {
-		print(debug ? TextMessages._t("RPG_MAIN.dint") : TextMessages._t("RPG_MAIN.val")); //$NON-NLS-1$ //$NON-NLS-2$
+		print(debug ? __("msg.debug.val") : __("msg.select.val")); //$NON-NLS-1$ //$NON-NLS-2$
 		int i = Integer.MAX_VALUE;
 		String in;
 		do {
@@ -496,7 +515,7 @@ public class RPG_MAIN {
 				i = Integer.parseInt(in);
 				break;
 			} catch (NumberFormatException e) {
-				print(TextMessages._t("RPG_MAIN.88")); //$NON-NLS-1$
+				print(__("RPG_MAIN.88")); //$NON-NLS-1$
 			}
 		} while (i == Integer.MAX_VALUE);
 
@@ -513,7 +532,7 @@ public class RPG_MAIN {
 	 * @throws IOException
 	 */
 	public static float getFloat() throws IOException {
-		print(debug ? TextMessages._t("RPG_MAIN.dint") : TextMessages._t("RPG_MAIN.val")); //$NON-NLS-1$ //$NON-NLS-2$
+		print(debug ? __("msg.debug.val") : __("msg.select.val")); //$NON-NLS-1$ //$NON-NLS-2$
 		float i = Integer.MAX_VALUE;
 		String in;
 		do {
@@ -522,7 +541,7 @@ public class RPG_MAIN {
 				i = Float.parseFloat(in);
 				break;
 			} catch (NumberFormatException e) {
-				print(TextMessages._t("RPG_MAIN.91")); //$NON-NLS-1$
+				print(__("RPG_MAIN.91")); //$NON-NLS-1$
 			}
 		} while (i == Integer.MAX_VALUE);
 
@@ -556,6 +575,14 @@ public class RPG_MAIN {
 		if (logging) {
 			logger.println(s);
 		}
+	}
+
+	private static void printf(String s, Object... args) {
+		print(String.format(s, args));
+	}
+
+	private static void printfln(String s, Object... args) {
+		println(String.format(s, args));
 	}
 
 }

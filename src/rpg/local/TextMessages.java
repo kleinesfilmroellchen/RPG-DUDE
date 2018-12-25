@@ -1,5 +1,6 @@
-package rpg.core;
+package rpg.local;
 
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -11,9 +12,9 @@ import java.util.ResourceBundle;
  * @version 0.0.0009
  */
 public class TextMessages {
-	private static final String BUNDLE_NAME = "rpg.core.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "rpg.local.text"; //$NON-NLS-1$
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+	private static ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, Locale.GERMAN);
 
 	private TextMessages() {
 	}
@@ -25,7 +26,11 @@ public class TextMessages {
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {
-			return '!' + key + '!';
+			return "!---MISSING please contact developers---" + key + '!';
 		}
+	}
+	
+	public static void setLang(Locale locale) {
+		RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, locale);
 	}
 }
