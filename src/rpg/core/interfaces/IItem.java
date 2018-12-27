@@ -31,7 +31,7 @@ public interface IItem {
 	 */
 	public String getLastFailMessage();
 
-	/** Returns a description for this item. */
+	/** Returns a long description for this item. */
 	public String getDescription();
 
 	/** Returns the item's name. */
@@ -39,6 +39,14 @@ public interface IItem {
 
 	/** Returns the item's unique id. */
 	public String getID();
+
+	/**
+	 * Returns the short display string for this item. Default method only returns
+	 * the name.
+	 */
+	public default String getShortDisplay() {
+		return this.getName();
+	}
 
 	/**
 	 * Method called to use the item.<br>
