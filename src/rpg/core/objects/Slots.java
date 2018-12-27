@@ -1,18 +1,29 @@
 package rpg.core.objects;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import rpg.core.interfaces.IItem;
 import rpg.helpers.Factory;
 import rpg.local.TextMessages;
 
 /**
  * Slots are used to hold items in designated spots. Slots support limitations
- * on item types
+ * on item types (implementor classes) and limit the number of holdable items.
  * @author kleinesfilmroellchen
- * @param <T> limiting item type, must be subclass of Item
+ * @param <T> limiting item type, must be implementor of Item
  * @see rpg.core.interfaces.IItem
  */
+@SuppressWarnings("rawtypes")
 public class Slots<T extends IItem> implements Collection<IItem> {
+
+	public static class ContainingException extends RuntimeException {
+		/** @inheritdoc */
+		private static final long serialVersionUID = 5952786505146662031L;
+
+		public ContainingException(String msg) {
+			super(msg);
+		}
+	}
 
 	private List<IItem> elements;
 
@@ -44,7 +55,7 @@ public class Slots<T extends IItem> implements Collection<IItem> {
 
 	@Override
 	public boolean isEmpty() {
-		return this.size() == 0;
+		return this.size() <= 0;
 	}
 
 	@Override
@@ -59,17 +70,38 @@ public class Slots<T extends IItem> implements Collection<IItem> {
 			throw new RuntimeException(Factory.__("msg.error.slotsfull"));
 		}
 
-		for (IItem elmt : this.elements) {
+		for (int i = 0; i++ < this.elements.lastIndexOf(null);) {
+			IItem elmt = this.elements.get(i);
 			if (elmt == null) {
-				elmt = e;
+				this.elements.set(i, e);
 				return true;
 			} else if (elmt.equals(e)) {
 				// already contains new element
-				return false;
+				throw new ContainingException(String.format(Factory.__("msg.error.contains"), elmt.toString()));
 			}
 		}
 		// not allowed to happen normally
 		return false;
+	}
+
+	public IItem itemAt(int index) {
+		return this.elements.get(index);
+	}
+
+	/**
+	 * Returns any element in the slot. More precisely, returns the first non-null
+	 * element of the iterator. If there is no non-null element, returns an empty
+	 * Optional. <br>
+	 * <br>
+	 * This method is recommended for retrieving an element of a slots with size 1.
+	 */
+	public Optional<IItem> any() {
+		IItem current = null;
+		Iterator<IItem> it = this.iterator();
+		while (it.hasNext() && current == null)
+			current = it.next();
+		// will either wrap null or a valid element
+		return Optional.ofNullable(current);
 	}
 
 	/**
@@ -82,6 +114,7 @@ public class Slots<T extends IItem> implements Collection<IItem> {
 		// nothing to do
 		if (newSize == this.size()) return true;
 
+		// greater size
 		IItem[] newElmtsArr = new IItem[newSize];
 		for (int i = 0; i < this.elements.size(); ++i) {
 			newElmtsArr[i] = this.elements.get(i);
@@ -95,7 +128,7 @@ public class Slots<T extends IItem> implements Collection<IItem> {
 	 * Finds out whether the slots are completely full.
 	 */
 	public boolean isFull() {
-		return this.elements.stream().anyMatch(elmt -> elmt == null);
+		return this.elements.stream().noneMatch(elmt -> elmt == null);
 	}
 
 	/**
@@ -140,8 +173,8 @@ public class Slots<T extends IItem> implements Collection<IItem> {
 	 * @return
 	 */
 	public boolean hasAll(Collection<IItem> items) {
-		ArrayList<IItem> toFind = new ArrayList<>(items);
-		ArrayList<IItem> lookup = new ArrayList<IItem>(this);
+		List<IItem> toFind = new ArrayList<>(items);
+		List<IItem> lookup = new LinkedList<IItem>(this);
 
 		for (int i = 0; i < toFind.size(); ++i) {
 			IItem current = toFind.get(i);
@@ -204,6 +237,7 @@ public class Slots<T extends IItem> implements Collection<IItem> {
 		return true;
 	}
 
+	/** Not allowed on this collection. */
 	public boolean retainAll(Collection c) {
 		return false;
 	}
@@ -217,7 +251,18 @@ public class Slots<T extends IItem> implements Collection<IItem> {
 		return this.elements.toArray();
 	}
 
+	@SuppressWarnings("unchecked")
 	public IItem[] toArray(Object[] a) {
 		return (IItem[]) this.toArray();
+	}
+
+	public String toString() {
+		return String.format(TextMessages._t("msg.tostring.slots"), toDisplay(), super.hashCode());
+	}
+
+	public String toDisplay() {
+		return String.join(", ", this.elements.stream()
+				.map(i -> i == null ? IItem.dummy().getShortDisplay() : i.getShortDisplay())
+				.collect(Collectors.toList()));
 	}
 }

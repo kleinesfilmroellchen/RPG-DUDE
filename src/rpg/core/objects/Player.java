@@ -35,9 +35,11 @@ public class Player extends Entity {
 
 	public Slots<Abillity> abilities = new Slots<Abillity>(3);
 
-	/** Player armour item, will be */
+	/** Player armour item. */
 	public Slots<IItem>	armour			= new Slots<IItem>(1);
+	/** Items the player holds: active in battles. */
 	public Slots<IItem>	holdingItems	= new Slots<IItem>(2);
+	/** Items in the player's bag/inventory. */
 	public Slots<IItem>	bagItems			= new Slots<IItem>(15);
 
 	/** Name wrapper. */
@@ -136,7 +138,7 @@ public class Player extends Entity {
 
 	/** A nicely formatted stats String. */
 	public String statString() {
-		return String.format(__("msg.game.stats.level")+"%n", this.level) +  super.statString(); //$NON-NLS-1$ //$NON-NLS-2$
+		return String.format(__("msg.game.stats.level") + "%n", this.level) + super.statString(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -150,8 +152,8 @@ public class Player extends Entity {
 			RPG_MAIN.printfln(__("msg.game.playermaxed"), this.name()); //$NON-NLS-1$
 			return;
 		}
-		
-		//first check ensures that player has enough xp for the levelup
+
+		// first check ensures that player has enough xp for the levelup
 		while (this.xp >= this.necessaryXP && !this.maxedOut) {
 			// theoretical index into future stats is to high: no level up possible
 			if (this.level - 1 > this.futureStats.size() - 1) {
@@ -199,7 +201,7 @@ public class Player extends Entity {
 		super.x = this.startPos.x;
 		super.y = this.startPos.y;
 		super.z = this.startPos.z;
-		
+
 		this.atk = baseStats.atk;
 		this.def = baseStats.def;
 		this.maxHealth = this.health = baseStats.maxHealth;

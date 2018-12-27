@@ -29,9 +29,9 @@ public class Room extends Coordinates {
 	private boolean	ladderDown;
 
 	/** The name of this room. */
-	public String	roomName				= Factory.__("msg.roomname"); //$NON-NLS-1$
+	public String	roomName				= Factory.__("msg.game.unnamedroom"); //$NON-NLS-1$
 	/** The description for this room. */
-	public String	roomDescription	= Factory.__("msg.roomdesc"); //$NON-NLS-1$
+	public String	roomDescription	= Factory.__("msg.game.roomdesc"); //$NON-NLS-1$
 
 	/** List of all items in this room. */
 	public List<IItem> items = new LinkedList<>();

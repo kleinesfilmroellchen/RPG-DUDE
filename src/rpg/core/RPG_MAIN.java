@@ -191,7 +191,28 @@ public class RPG_MAIN {
 			switch (opt) {
 
 			case 'p':
-				println(__("msg.itemdisclaimer"));
+				// items in room
+				ArrayList<IItem> iInRoom = new ArrayList<IItem>(currentRoom().items);
+				if (iInRoom.isEmpty()) {
+					println(__("msg.game.noitem"));
+					break;
+				}
+				println(__("msg.game.itemsinroom"));
+				println(iInRoom.toString());
+				println(__("msg.select.item"));
+				char sel = getOpt();
+				if (sel == 'a') {
+					printfln(__("msg.game.takeallitems"), p.name());
+					for (IItem i : iInRoom) {
+						try {
+							p.bagItems.add(i);
+							currentRoom().items.remove(i);
+						} catch (Slots.ContainingException e) {
+							printfln(__("msg.game.itemnottaken"), i.getShortDisplay());
+							continue;
+						}
+					}
+				}
 				break;
 
 			case 'h':
@@ -205,6 +226,12 @@ public class RPG_MAIN {
 
 			case 's':
 				println(p.statString());
+				break;
+			case 'b':
+				printfln(__("msg.game.inventory") + "%n", p.name());
+				println(__("msg.items.bag") + ": " + p.bagItems.toDisplay());
+				println(__("msg.items.armour^p") + ": " + p.armour.any().orElse(IItem.dummy()).getShortDisplay());
+				println(__("msg.items.holding") + ": " + p.holdingItems.toDisplay());
 				break;
 
 			case 'l':
@@ -289,10 +316,6 @@ public class RPG_MAIN {
 					println(__("msg.game.noattackable")); //$NON-NLS-1$
 				break;
 
-			case 'p':
-				ArrayList<IItem> inRoom = new ArrayList<IItem>();
-				break;
-
 			case 'i':
 				println(Help.gameInfo());
 				break;
@@ -348,7 +371,7 @@ public class RPG_MAIN {
 	}
 
 	private static String __(String lookup) {
-		if (debug) { return lookup + ": " + IItem.__(lookup); }
+		// if (debug) { return lookup + ": " + IItem.__(lookup); }
 		return IItem.__(lookup);
 	}
 
@@ -493,7 +516,7 @@ public class RPG_MAIN {
 	 * @throws IOException
 	 */
 	public static void askForMovement() throws IOException {
-		printf(__("msg.select.dir")); //$NON-NLS-1$
+		printfln(__("msg.select.dir")); //$NON-NLS-1$
 		byte x = 0, y = 0;
 		char dir = getOpt();
 		switch (dir) {
@@ -510,7 +533,7 @@ public class RPG_MAIN {
 			x = 1;
 			break;
 		default:
-			print(__("msg.error.nosuchdir")); //$NON-NLS-1$
+			println(__("msg.error.nosuchdir")); //$NON-NLS-1$
 			return;
 		}
 
@@ -531,7 +554,7 @@ public class RPG_MAIN {
 	 * @throws IOException
 	 */
 	public static char getOpt() throws IOException {
-		char opt = '9';
+		char opt = 0;
 		do {
 			print(debug ? __("msg.debug.char") : __("msg.select.char")); //$NON-NLS-1$ //$NON-NLS-2$
 			try {
@@ -541,7 +564,7 @@ public class RPG_MAIN {
 			} catch (StringIndexOutOfBoundsException e) {
 				println(__("msg.error.insufficientlength")); //$NON-NLS-1$
 			}
-		} while (!Character.isLetter(opt));
+		} while (opt == 0);
 
 		logger.println(opt);
 		input.skip(".*"); //$NON-NLS-1$

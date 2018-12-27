@@ -42,6 +42,10 @@ public class CraftingI implements IItem {
 	public String getDescription() {
 		return desc;
 	}
+	
+	public String toString() {
+		return this.getShortDisplay();
+	}
 
 	@Override
 	public String getName() {

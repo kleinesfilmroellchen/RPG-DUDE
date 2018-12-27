@@ -39,6 +39,14 @@ public class Abillity implements IItem {
 		return name;
 	}
 
+	public String getShortDisplay() {
+		return this.getName() + " (" + IItem.__("msg.items.ability") + ")";
+	}
+	
+	public String toString() {
+		return this.getShortDisplay();
+	}
+
 	@Override
 	public State use(Player player) {
 		return null;

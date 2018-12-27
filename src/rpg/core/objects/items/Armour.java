@@ -49,6 +49,14 @@ public class Armour implements IItem {
 		return name;
 	}
 
+	public String getShortDisplay() {
+		return this.getName() + " (" + IItem.__("msg.items.armour") + ")";
+	}
+
+	public String toString() {
+		return this.getShortDisplay();
+	}
+
 	public int getProtection() {
 		return protection;
 	}

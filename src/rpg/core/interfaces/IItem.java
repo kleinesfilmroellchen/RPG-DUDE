@@ -6,7 +6,10 @@ import rpg.helpers.*;
 import rpg.local.TextMessages;
 
 /**
- * A base class for all items. All items will inherit from this.
+ * A base class for all items. All items will inherit from this. <b>Note:</b>
+ * The {@code equals()} method must <b>NOT</b> be overridden, because the
+ * "strict" equality of the default {@code Object} implementation is required
+ * for the slots collections.
  * @author kleinesfilmröllchen
  * @since 0.0.0004
  * @version 0.0.0009
@@ -96,4 +99,43 @@ public interface IItem {
 	 * @return The final state of execution.
 	 */
 	public abstract State equip(Player player);
+
+	/**
+	 * Returns a dummy item which has no use and should only be used for display
+	 * purposes: The player should never aquire such an item.
+	 */
+	public static IItem dummy() {
+		return new IItem() {
+
+			public int getSellValue() {
+				return 0;
+			}
+
+			public String getLastFailMessage() {
+				return String.format(__("msg.error.notusable"), getName());
+			}
+
+			public String getDescription() {
+				return __("msg.items.nodescription");
+			}
+
+			public String getName() {
+				return __("msg.items.dummy");
+			}
+			public String getShortDisplay() {return __("msg.nothing");}
+
+			public String getID() {
+				return "dummy";
+			}
+
+			public State use(Player player) {
+				return State.notAllowed;
+			}
+
+			public State equip(Player player) {
+				return State.notAllowed;
+			}
+
+		};
+	}
 }
