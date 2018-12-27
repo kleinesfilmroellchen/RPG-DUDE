@@ -2,11 +2,14 @@ package rpg.helpers;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Optional;
 import json.*;
 import rpg.core.objects.*;
+import rpg.local.TextMessages;
 import utils.FileBuffer;
 import rpg.core.*;
+import rpg.core.interfaces.IItem;
 
 /**
  * A loader class with the file loading functionality.
@@ -16,6 +19,41 @@ import rpg.core.*;
  */
 public class Loaders {
 	/**
+	 * Loads the player position
+	 * @param mapname Path to the map (without /res)
+	 * @return Coordinates with player starting position
+	 */
+	public static Coordinates loadPlayerPos(String mapname) throws JSONException, FileNotFoundException, IOException {
+		JSONObject map = new JSONObject(FileBuffer.getContent(mapname));
+		JSONArray coords = map.getJSONObject("playerdata").getJSONArray("start-pos");
+		return new Coordinates(coords.getInt(0), coords.getInt(1), coords.getInt(2));
+	}
+
+	/**
+	 * Loads the configuration file for the game and returns a JSON object whose
+	 * values are guaranteed to contain something
+	 * @param configname Name of configuration file to be loaded
+	 * @return JSON object with configuration values, no required value will be
+	 * unset
+	 * @throws IOException
+	 */
+	public static JSONObject loadConfig(String configname) throws IOException {
+		// finds first specified config file; if there is none, uses stdconfig.json
+		JSONObject config = new JSONObject(FileBuffer.getContent(configname));
+
+		// create values if not present
+		if (!config.has("map")) config.put("map", "map1.json");
+		if (!config.has("enemies")) config.put("enemies", "enemies.json");
+		if (!config.has("lang")) {
+			//use system locale
+			Locale sysloc = Locale.getDefault();
+			config.put("lang", sysloc.toLanguageTag());
+		}
+
+		return config;
+	}
+
+	/**
 	 * Loads the map.
 	 * @param absolutePath The path to the JSON map file.
 	 */
@@ -24,17 +62,17 @@ public class Loaders {
 		JSONObject map = new JSONObject(FileBuffer.getContent(absolutePath));
 		// Map version doesn't equal this game's version
 		if (!map.getString("compatible-version").equalsIgnoreCase(GameConst.VERSION)) {
-			System.err.println(
-					"Fehler: Kartendatei ist nicht mit Spiel kompatibel.\nBitte verwende eine Karte, die dieselbe Version wie dieses Spiel ("
-							+ GameConst.VERSION + ") aufweist.");
+			System.err.printf(
+					Factory.__("msg.error.incompatibleversion"),
+					GameConst.VERSION);
 			System.exit(1);
 		}
 
 		JSONArray rMatrix = map.getJSONArray("room-matrix");
 		// Room 3D Array
 		Room[][][] roomArrayMatrix = new Room[rMatrix.length()] // Number of floors
-		[rMatrix.getJSONObject(0).getJSONArray("rooms").length()] // Number of room rows in a floor
-		[rMatrix.getJSONObject(0).getJSONArray("rooms").getJSONArray(0).length()]; // Number of rooms in a row
+		[rMatrix.getJSONObject(0).getJSONArray("rooms").length()] // Number of room rows (y) in a floor
+		[rMatrix.getJSONObject(0).getJSONArray("rooms").getJSONArray(0).length()]; // Number of rooms (x) in a row
 
 		// for every floor in the room matrix
 		for (int i = 0; i < rMatrix.length(); i++) {
@@ -100,7 +138,7 @@ public class Loaders {
 	public static ArrayList<Enemy> getEnemies(String absolutePath)
 			throws JSONException, ClassCastException, IOException {
 		File f = new File(absolutePath);
-		if (f.isDirectory()) throw new FileNotFoundException("File is a directory but must be a readable file");
+		if (f.isDirectory()) throw new FileNotFoundException(String.format(Factory.__("msg.error.fnf"), f.getAbsolutePath()));
 
 		JSONArray array = new JSONArray(FileBuffer.getContent(absolutePath));
 		ArrayList<Enemy> returner = new ArrayList<Enemy>(array.length());
@@ -118,8 +156,7 @@ public class Loaders {
 						o.getString("desc")));
 				returner.get(i).id = o.getString("name");
 			} catch (JSONException je) {
-				System.err.println("JSON file " + absolutePath
-						+ " contains an unreadable enemy. Make sure your file has all necessary properties for all enemies and has correct syntax.");
+				System.err.printf(Factory.__("msg.error.incompatibleenemy"), absolutePath);
 				je.printStackTrace();
 			}
 		}
@@ -175,9 +212,7 @@ public class Loaders {
 						posArray.getInt(2));
 			} else {
 				// this should not happen: throw exception
-				throw new JSONException("The enemy " + enemyObj.getString("id")
-						+ " is not specified in the enemies.json file.\n"
-						+ "Make sure you have the original archive file or the dedicated map file in the execution folder and restart the application.");
+				throw new JSONException(String.format(Factory.__("msg.error.invalidenemyid"), enemyObj.getString("id")));
 			}
 		}
 
@@ -201,7 +236,7 @@ public class Loaders {
 		JSONArray array = file.getJSONArray("items");
 		for (Object itemObj : array) {
 			JSONObject itemJson = (JSONObject) itemObj;
-			ArrayList<Item> itemlist = new ArrayList<>();
+			ArrayList<IItem> itemlist = new ArrayList<>();
 			int count = itemJson.getInt("count");
 			for (int i = 0; i < count; ++i)
 				itemlist.add(Factory.byId(itemJson.getString("id")));

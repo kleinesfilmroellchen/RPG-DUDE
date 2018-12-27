@@ -1,7 +1,11 @@
 package rpg.core.objects;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import rpg.core.interfaces.IItem;
+import rpg.helpers.Factory;
+import rpg.local.TextMessages;
 
 /**
  * Stores information about a certain room.
@@ -25,12 +29,12 @@ public class Room extends Coordinates {
 	private boolean	ladderDown;
 
 	/** The name of this room. */
-	public String	roomName				= "Namenloser Raum";
+	public String	roomName				= Factory.__("msg.roomname"); //$NON-NLS-1$
 	/** The description for this room. */
-	public String	roomDescription	= "Keine Beschreibung für diesen Raum";
+	public String	roomDescription	= Factory.__("msg.roomdesc"); //$NON-NLS-1$
 
 	/** List of all items in this room. */
-	public List<Item> items = new ArrayList<>();
+	public List<IItem> items = new LinkedList<>();
 
 	/**
 	 * Constructor which allows exits to all sides, but not up and down (open space
@@ -141,6 +145,6 @@ public class Room extends Coordinates {
 	}
 
 	public String toString() {
-		return this.roomName + ": " + super.toString();
+		return this.roomName + ": " + super.toString(); // $NON-NLS-1$ //$NON-NLS-1$
 	}
 }

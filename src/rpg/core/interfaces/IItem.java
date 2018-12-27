@@ -1,6 +1,9 @@
-package rpg.core.objects;
+package rpg.core.interfaces;
 
+import rpg.core.objects.Entity;
+import rpg.core.objects.Player;
 import rpg.helpers.*;
+import rpg.local.TextMessages;
 
 /**
  * A base class for all items. All items will inherit from this.
@@ -9,7 +12,15 @@ import rpg.helpers.*;
  * @version 0.0.0009
  * @see rpg.core.objects.items Item subclasses
  */
-public interface Item {
+public interface IItem {
+	/**
+	 * A text message wrapper for all item implementors
+	 * @param key message key
+	 * @return the corresponding message
+	 */
+	static String __(String key) {
+		return Entity.__(key);
+	}
 
 	/** Returns the basic sell value the item has. */
 	public int getSellValue();

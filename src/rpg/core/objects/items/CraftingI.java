@@ -1,8 +1,10 @@
 package rpg.core.objects.items;
 
-import rpg.core.objects.Item;
+import rpg.core.interfaces.IItem;
 import rpg.core.objects.Player;
+import rpg.helpers.Factory;
 import rpg.helpers.State;
+import rpg.local.TextMessages;
 
 /**
  * Blueprint for any item that is only for crafting and cannot be used.
@@ -10,7 +12,7 @@ import rpg.helpers.State;
  * @version 0.0.0009
  * @since 0.0.0009
  */
-public class CraftingI implements Item {
+public class CraftingI implements IItem {
 
 	private String	name;
 	private String	desc;
@@ -48,13 +50,13 @@ public class CraftingI implements Item {
 
 	@Override
 	public State use(Player player) {
-		msg = String.format("%s kann nicht verwendet werden!", name);
+		msg = String.format(Factory.__("msg.game.cannotuseitem"), name); //$NON-NLS-1$
 		return State.notAllowed;
 	}
 
 	@Override
 	public State equip(Player player) {
-		msg = String.format("%s kann nicht ausgerüstet werden!", name);
+		msg = String.format(Factory.__("msg.game.cannotequipitem"), name); //$NON-NLS-1$
 		return State.notAllowed;
 	}
 

@@ -1,37 +1,40 @@
 package rpg.core.objects;
 
 import java.util.*;
+import rpg.core.interfaces.IItem;
+import rpg.helpers.Factory;
+import rpg.local.TextMessages;
 
 /**
  * Slots are used to hold items in designated spots. Slots support limitations
  * on item types
  * @author kleinesfilmroellchen
  * @param <T> limiting item type, must be subclass of Item
- * @see rpg.core.objects.Item
+ * @see rpg.core.interfaces.IItem
  */
-public class Slots<T extends Item> implements Collection<Item> {
+public class Slots<T extends IItem> implements Collection<IItem> {
 
-	private List<Item> elements;
+	private List<IItem> elements;
 
 	/**
 	 * Creates slots with the specified elements.
 	 */
-	public <U extends Item> Slots(U[] elmts) {
+	public <U extends IItem> Slots(U[] elmts) {
 		this.elements = Arrays.asList(elmts);
 	}
 
 	/**
 	 * Creates slots with the specified collection content.
 	 */
-	public Slots(Collection<? extends Item> elmts) {
-		this(elmts.toArray(new Item[1]));
+	public Slots(Collection<? extends IItem> elmts) {
+		this(elmts.toArray(new IItem[1]));
 	}
 
 	/**
 	 * Creates slots with the specified number of elements in it.
 	 */
 	public Slots(int slots) {
-		this.elements = Arrays.asList(new Item[slots]);
+		this.elements = Arrays.asList(new IItem[slots]);
 	}
 
 	@Override
@@ -50,13 +53,13 @@ public class Slots<T extends Item> implements Collection<Item> {
 	}
 
 	@Override
-	public boolean add(Item e) {
+	public boolean add(IItem e) {
 		if (this.isFull()) {
 			// No replacement found
-			throw new RuntimeException("Slots are full, no element can be added without replacement");
+			throw new RuntimeException(Factory.__("msg.error.slotsfull"));
 		}
 
-		for (Item elmt : this.elements) {
+		for (IItem elmt : this.elements) {
 			if (elmt == null) {
 				elmt = e;
 				return true;
@@ -79,7 +82,7 @@ public class Slots<T extends Item> implements Collection<Item> {
 		// nothing to do
 		if (newSize == this.size()) return true;
 
-		Item[] newElmtsArr = new Item[newSize];
+		IItem[] newElmtsArr = new IItem[newSize];
 		for (int i = 0; i < this.elements.size(); ++i) {
 			newElmtsArr[i] = this.elements.get(i);
 		}
@@ -102,13 +105,13 @@ public class Slots<T extends Item> implements Collection<Item> {
 	 * @return the replaced element, if any had to be replaced. If there wasn't an
 	 * element replaced, returns {@code null}.
 	 */
-	public Item addReplace(Item o, int idx) {
+	public IItem addReplace(IItem o, int idx) {
 		// Replacement required
 		if (this.isFull())
-			return this.elements.set(idx, (Item) o);
+			return this.elements.set(idx, (IItem) o);
 		// Insert at first free position
 		else
-			for (Item elmt : this.elements) {
+			for (IItem elmt : this.elements) {
 				if (elmt == null) elmt = o;
 			}
 
@@ -119,8 +122,8 @@ public class Slots<T extends Item> implements Collection<Item> {
 	 * Empties the Slots as by invocating the {@code clear} method and returns all
 	 * elements as an ArrayList.
 	 */
-	public ArrayList<Item> empty() {
-		ArrayList<Item> formerElmts = new ArrayList<Item>(this.elements);
+	public ArrayList<IItem> empty() {
+		ArrayList<IItem> formerElmts = new ArrayList<IItem>(this.elements);
 		this.elements.removeAll(elements);
 		return formerElmts;
 	}
@@ -136,15 +139,15 @@ public class Slots<T extends Item> implements Collection<Item> {
 	 * @param items
 	 * @return
 	 */
-	public boolean hasAll(Collection<Item> items) {
-		ArrayList<Item> toFind = new ArrayList<>(items);
-		ArrayList<Item> lookup = new ArrayList<Item>(this);
+	public boolean hasAll(Collection<IItem> items) {
+		ArrayList<IItem> toFind = new ArrayList<>(items);
+		ArrayList<IItem> lookup = new ArrayList<IItem>(this);
 
 		for (int i = 0; i < toFind.size(); ++i) {
-			Item current = toFind.get(i);
+			IItem current = toFind.get(i);
 			// find everything in this slot that is the same item (ID) as the currently
 			// checked item
-			Iterator<Item> matching = lookup.stream().filter(item -> item.getID().equals(current.getID())).iterator();
+			Iterator<IItem> matching = lookup.stream().filter(item -> item.getID().equals(current.getID())).iterator();
 			if (!matching.hasNext()) {
 				// there is no item with that id found
 				return false;
@@ -171,7 +174,7 @@ public class Slots<T extends Item> implements Collection<Item> {
 	@Override
 	public boolean containsAll(Collection<?> c) {
 		// checks if both collections have type argument T (extends Item)
-		return c.getClass().isAssignableFrom(this.getClass()) ? hasAll((Collection<Item>) c) : false;
+		return c.getClass().isAssignableFrom(this.getClass()) ? hasAll((Collection<IItem>) c) : false;
 	}
 
 	@Override
@@ -182,13 +185,13 @@ public class Slots<T extends Item> implements Collection<Item> {
 	public boolean removeAll(Collection<?> c) {
 		if (!c.getClass().isAssignableFrom(this.getClass())) return false;
 
-		ArrayList<Item> toRemove = new ArrayList<Item>((Collection<Item>) c);
+		ArrayList<IItem> toRemove = new ArrayList<IItem>((Collection<IItem>) c);
 
 		for (int i = 0; i < toRemove.size(); ++i) {
-			Item current = toRemove.get(i);
+			IItem current = toRemove.get(i);
 			// find everything in this slot that is the same item (ID) as the currently
 			// checked item
-			Iterator<Item> matching = this.stream().filter(item -> item.getID().equals(current.getID())).iterator();
+			Iterator<IItem> matching = this.stream().filter(item -> item.getID().equals(current.getID())).iterator();
 			if (!matching.hasNext()) {
 				// there is no item with that id found
 				return false;
@@ -206,7 +209,7 @@ public class Slots<T extends Item> implements Collection<Item> {
 	}
 
 	// Returners
-	public Iterator<Item> iterator() {
+	public Iterator<IItem> iterator() {
 		return this.elements.iterator();
 	}
 
@@ -214,7 +217,7 @@ public class Slots<T extends Item> implements Collection<Item> {
 		return this.elements.toArray();
 	}
 
-	public Item[] toArray(Object[] a) {
-		return (Item[]) this.toArray();
+	public IItem[] toArray(Object[] a) {
+		return (IItem[]) this.toArray();
 	}
 }

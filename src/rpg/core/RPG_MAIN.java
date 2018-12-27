@@ -1,12 +1,12 @@
 package rpg.core;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Stream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import json.JSONException;
+import json.JSONObject;
+import rpg.core.interfaces.IItem;
 import rpg.core.objects.*;
 import rpg.helpers.*;
 import rpg.local.TextMessages;
@@ -15,7 +15,19 @@ import utils.FileBuffer;
 // Symbols for copying: <>|
 
 /**
- * The all-mighty master class doing everything. Might get a little cramped :-)
+ * The all-mighty master class doing everything. <br>
+ * <br>
+ * String and Console message agreement:
+ * <ul>
+ * <li>Every complete (output) message is ended by a SINGLE newline
+ * (System.lineSeparator()).</li>
+ * <li>String methods with multiple lines NEVER END OR START with a
+ * newline.</li>
+ * <li>The same goes for PROPERTY Strings.</li>
+ * <li>ANSI Control characters (especially backspace) should never affect more
+ * than the current line, message or return string.</li>
+ * </ul>
+ * It is, of course, allowed to add extra newlines
  * @author DJH
  * @author kleinesfilmröllchen
  * @version 0.0.0009
@@ -24,6 +36,11 @@ import utils.FileBuffer;
 public class RPG_MAIN {
 
 	// Variables
+	/**
+	 * Locale of the game, input by the user or determined by the system
+	 * environment.
+	 */
+	public static Locale		gamelang;
 	/** Scanner for easy text input access. */
 	public static Scanner	input		= new Scanner(System.in);
 	/** Print stream for logging */
@@ -45,53 +62,76 @@ public class RPG_MAIN {
 	 */
 	private static Room[][][]			rooms;
 
-	/** Signals that the asyncronous setup is ready. */
-	public static volatile boolean asyncReady = false;
-
 	/**
 	 * Main function.
 	 * @param args
 	 * @throws IOException
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] _args) throws IOException {
+	public static void main(String[] _args) throws IOException, InterruptedException {
 		//// Test code belongs here
-		System.out.println(Locale.GERMAN.getLanguage());
+		// System.out.println(Locale.getDefault().toLanguageTag());
 
+		//// Async config loader callable
+		ExecutorService ex = Executors.newSingleThreadExecutor();
+		Future<JSONObject> configGetter = ex.submit(() -> {
+			JSONObject config = Loaders
+					.loadConfig(Arrays.stream(_args).filter(str -> str.matches("config=\\w+")).findFirst()
+							.orElse("config=stdconfig.json").replaceAll("config=", "res/"));
+
+			// setup language
+			gamelang = Locale.forLanguageTag(config.getString("lang"));
+			TextMessages.setLang(gamelang);
+			// this makes all string formatting behave according to locale rules
+			Locale.setDefault(gamelang);
+
+			return config;
+		});
 		//// Async setup code: time consuming stuff belongs into this method.
-		// That stuff is executed on a separate thread without blocking the main program
-		//// thread.
-		Thread setupThread = new Thread(() -> {
+		//// That stuff is executed on a separate thread without blocking the main
+		//// program thread.
+		Thread setupThread = new Thread(null, () -> {
 			// long time = System.currentTimeMillis();
 			Functionality.initGenerator();
 			try {
+				// might block while waiting for other thread
+				JSONObject config = configGetter.get();
+				// parse arguments into stream
 				File log = FileBuffer.getFile("log.txt");
 				logger = new PrintStream(log);
 
-				rooms = Loaders.loadRoomsFromMap("map1.json");
+				rooms = Loaders.loadRoomsFromMap("res/" + config.getString("map"));
 
-				loadEnemyPrefabs();
-				loadEnemiesFromMap();
-				Loaders.loadItemsInMap("map1.json", rooms);
+				loadEnemyPrefabs(config);
+				loadEnemiesFromMap(config);
+				Loaders.loadItemsInMap("res/" + config.getString("map"), rooms);
 
 			} catch (IOException e) {
 				System.err.println(__("msg.error.loggercreate")); //$NON-NLS-1$
-				System.exit(1);
+				System.exit(5);
 			} catch (SecurityException e) {
 				System.err.println(__("msg.error.writepermission")); //$NON-NLS-1$
-				System.exit(1);
+				System.exit(6);
+			} catch (JSONException e) {
+				System.err.println(__("msg.error.json")); //$NON-NLS-1$
+				System.exit(2);
+			} catch (Exception e) {
+				System.err.println(__("msg.error.unknown"));
+				e.printStackTrace();
+				System.exit(4);
+			} finally {
+				logger.flush();
 			}
-			logger.flush();
-			RPG_MAIN.asyncReady = true;
 			// System.out.println("Setup thread finished after " +
 			// (System.currentTimeMillis() - time) + " milliseconds.");
-		});
-		setupThread.setName("Setup Async");
+		}, "SetupAsync");
 		setupThread.start();
 
 		//// Sync setup code
 		try {
-			// Argument checking
+			// parse arguments into stream
 			Stream<String> args = Arrays.stream(_args);
+			// Argument checking
 			if (args.anyMatch(s -> s.equalsIgnoreCase("manual"))) {
 				manual.ManualMain.manualInit();
 				System.exit(0);
@@ -108,10 +148,13 @@ public class RPG_MAIN {
 					s -> s.equalsIgnoreCase("log") || s.equalsIgnoreCase("logging") || s.equalsIgnoreCase("logger"));
 
 			// Wait until async setup is ready
-			if (logging) while (!asyncReady);;
+			if (logging) setupThread.join();
 			input.useDelimiter("\\p{javaWhitespace}+"); //$NON-NLS-1$
 
-			setupPlayer();
+			////// THE GAME HAS STARTED
+			setupPlayer(configGetter.get());
+
+			printfln(__("msg.splashscreen"), p.name(), GameConst.VERSION); //$NON-NLS-1$
 
 		} catch (FileNotFoundException e) {
 			println(__("msg.error.fnf") + e.getMessage()); //$NON-NLS-1$
@@ -132,11 +175,12 @@ public class RPG_MAIN {
 			System.exit(4);
 		}
 
-		while (!asyncReady);
+		setupThread.join();
+		ex.shutdown();
 
 		//////// Main game loop
 		do {
-			printfln(__("msg.select.action"), p.name()); //$NON-NLS-1$ //$NON-NLS-2$
+			printfln("%n" + __("msg.select.action"), p.name()); //$NON-NLS-1$ //$NON-NLS-2$
 			char opt = getOpt();
 
 			if (opt == 'e') {
@@ -208,7 +252,7 @@ public class RPG_MAIN {
 				if (!seenSth) println(__("msg.game.seenothing")); //$NON-NLS-1$
 
 				seenSth = false;
-				for (Item item : pr.items) {
+				for (IItem item : pr.items) {
 					printfln(__("msg.game.iteminroom"), item.getName());
 					seenSth = true;
 				}
@@ -243,6 +287,10 @@ public class RPG_MAIN {
 					}
 				} else
 					println(__("msg.game.noattackable")); //$NON-NLS-1$
+				break;
+
+			case 'p':
+				ArrayList<IItem> inRoom = new ArrayList<IItem>();
 				break;
 
 			case 'i':
@@ -300,27 +348,29 @@ public class RPG_MAIN {
 	}
 
 	private static String __(String lookup) {
-		if (debug) { return lookup + ": " + TextMessages._t(lookup); }
-		return TextMessages._t(lookup);
+		if (debug) { return lookup + ": " + IItem.__(lookup); }
+		return IItem.__(lookup);
 	}
 
 	/**
 	 * Loads all enemies from the enemies.json file as prefabs and puts them into a
 	 * lookup table. Those are later used to create the real enemies.
+	 * @param config TODO
 	 */
-	private static void loadEnemyPrefabs() throws JSONException, IOException {
-		ArrayList<Enemy> dict = Loaders.getEnemies("enemies.json"); //$NON-NLS-1$
+	private static void loadEnemyPrefabs(JSONObject config) throws JSONException, IOException {
+		ArrayList<Enemy> dict = Loaders.getEnemies("res/" + config.getString("enemies")); //$NON-NLS-1$
 		enemyPrefabs = dict;
 	}
 
 	/**
 	 * Loads the actual enemies from the map file and sets their rooms. The private
 	 * field {@code enemies} is set to the loaded enemies.
+	 * @param config TODO
 	 * @throws JSONException if something has incorrect format or values.
 	 * @throws IOException if something with I/O goes wrong.
 	 */
-	private static void loadEnemiesFromMap() throws JSONException, IOException {
-		RPG_MAIN.enemies = Loaders.loadEnemiesOnMap("map1.json", enemyPrefabs); //$NON-NLS-1$
+	private static void loadEnemiesFromMap(JSONObject config) throws JSONException, IOException {
+		RPG_MAIN.enemies = Loaders.loadEnemiesOnMap("res/" + config.getString("map"), enemyPrefabs); //$NON-NLS-1$
 	}
 
 	/**
@@ -329,12 +379,18 @@ public class RPG_MAIN {
 	 * @throws FileNotFoundException
 	 * @throws JSONException
 	 */
-	private static void setupPlayer() throws JSONException, FileNotFoundException, IOException {
-		print(__("msg.select.name")); //$NON-NLS-1$
-		p = new Player(input.nextLine(), GameConst.P_BASE_LEVEL, "map1.json"); //$NON-NLS-1$
+	private static void setupPlayer(JSONObject config) throws JSONException, FileNotFoundException, IOException {
+		println(__("msg.select.name")); //$NON-NLS-1$
+		p = new Player(
+				getStr(),
+				GameConst.P_BASE_LEVEL,
+				Loaders.loadPlayerPos("res/" + config.getString("map"))); // $NON-NLS-1$ // $NON-NLS-2$
 		p.futureStats = GameConst.requestPlayerLevels();
+	}
 
-		printfln(__("msg.splashscreen"), p.name(), GameConst.VERSION); //$NON-NLS-1$
+	/** @return Current room where the player is. */
+	public static Room currentRoom() {
+		return rooms[p.getZ()][p.getX()][p.getY()];
 	}
 
 	/**
@@ -356,7 +412,7 @@ public class RPG_MAIN {
 			if (flightSuccessful) break;
 
 			// Player fight decisions
-			printfln(__("msg.game.inbattle"), p.name()); //$NON-NLS-1$ //$NON-NLS-2$
+			printfln("%n" + __("msg.game.inbattle"), p.name()); //$NON-NLS-1$
 			char playerAction = getOpt();
 
 			switch (playerAction) {
@@ -437,7 +493,7 @@ public class RPG_MAIN {
 	 * @throws IOException
 	 */
 	public static void askForMovement() throws IOException {
-		print(__("msg.select.dir")); //$NON-NLS-1$
+		printf(__("msg.select.dir")); //$NON-NLS-1$
 		byte x = 0, y = 0;
 		char dir = getOpt();
 		switch (dir) {
@@ -508,15 +564,33 @@ public class RPG_MAIN {
 				i = Integer.parseInt(in);
 				break;
 			} catch (NumberFormatException e) {
-				print(__("msg.error.nonumber")); //$NON-NLS-1$
+				print(__("msg.error.noint")); //$NON-NLS-1$
 			}
 		} while (i == Integer.MAX_VALUE);
 
 		logger.println(Integer.toString(i));
-		System.in.skip(System.in.available());
-		System.out.println(System.in.available());
+		input.skip(".*");
 
 		return i;
+	}
+
+	public static String getStr() throws IOException {
+		String opt = "";
+		do {
+			print(debug ? __("msg.debug.string") : __("msg.select.string")); //$NON-NLS-1$ //$NON-NLS-2$
+			try {
+				opt = input.next().toLowerCase();
+			} catch (InputMismatchException e) {
+				println(__("msg.error.invalidchar")); //$NON-NLS-1$
+			} catch (StringIndexOutOfBoundsException e) {
+				println(__("msg.error.insufficientlength")); //$NON-NLS-1$
+			}
+		} while (opt.length() <= 0);
+
+		logger.println(opt);
+		input.skip(".*"); //$NON-NLS-1$
+
+		return opt;
 	}
 
 	/**
@@ -534,15 +608,12 @@ public class RPG_MAIN {
 				i = Float.parseFloat(in);
 				break;
 			} catch (NumberFormatException e) {
-				print(__("msg.error.nonumber")); //$NON-NLS-1$
+				print(__("msg.error.nofloat")); //$NON-NLS-1$
 			}
 		} while (i == Integer.MAX_VALUE);
 
 		logger.println(Float.toString(i));
-		input.close();
-		input = new Scanner(System.in);
-		System.in.skip(System.in.available());
-		System.out.println(System.in.available());
+		input.skip(".*");
 
 		return i;
 	}
@@ -570,10 +641,24 @@ public class RPG_MAIN {
 		}
 	}
 
+	/**
+	 * Prints a string while first passing it through the
+	 * {@code String.format(s, args)}.
+	 * @param s String to format and print.
+	 * @param args Formatting arguments.
+	 * @see String#format(String, Object...)
+	 */
 	public static void printf(String s, Object... args) {
 		print(String.format(s, args));
 	}
 
+	/**
+	 * Prints a string while first passing it through the
+	 * {@code String.format(s, args)}. The line is terminated.
+	 * @param s String to format and print.
+	 * @param args Formatting arguments.
+	 * @see String#format(String, Object...)
+	 */
 	public static void printfln(String s, Object... args) {
 		println(String.format(s, args));
 	}

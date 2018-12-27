@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.*;
 import json.*;
 import rpg.core.RPG_MAIN;
+import rpg.core.interfaces.IItem;
 import rpg.core.objects.items.Abillity;
-import rpg.helpers.Functionality;
 import utils.BetterMath;
 import utils.FileBuffer;
 
@@ -36,9 +36,9 @@ public class Player extends Entity {
 	public Slots<Abillity> abilities = new Slots<Abillity>(3);
 
 	/** Player armour item, will be */
-	public Slots<Item>	armour			= new Slots<Item>(1);
-	public Slots<Item>	holdingItems	= new Slots<Item>(2);
-	public Slots<Item>	bagItems			= new Slots<Item>(15);
+	public Slots<IItem>	armour			= new Slots<IItem>(1);
+	public Slots<IItem>	holdingItems	= new Slots<IItem>(2);
+	public Slots<IItem>	bagItems			= new Slots<IItem>(15);
 
 	/** Name wrapper. */
 	public String name() {
@@ -71,12 +71,14 @@ public class Player extends Entity {
 	}
 
 	/**
-	 * Constructor that should be used in all cases
+	 * Deprecated self-reading constructor
 	 * @param n Player name
 	 * @param startingStats Stats to use for the start
 	 * @param absolutePath path to map
 	 * @throws JSONException if map not correct format
 	 * @throws FileNotFoundException if file path invalid
+	 * @deprecated Use {@link #Player(String,Stats,Coordinates)} instead; this
+	 * causes problems all over
 	 */
 	public Player(String n, Stats startingStats, String absolutePath)
 			throws JSONException, FileNotFoundException, IOException {
@@ -85,10 +87,10 @@ public class Player extends Entity {
 
 		JSONObject map = new JSONObject(FileBuffer.getContent(absolutePath));
 		try {
-			JSONArray posArray = map.getJSONObject("playerdata").getJSONArray("start-pos");
+			JSONArray posArray = map.getJSONObject("playerdata").getJSONArray("start-pos"); //$NON-NLS-1$ //$NON-NLS-2$
 			this.setCoords(posArray.getInt(0), posArray.getInt(1), posArray.getInt(2));
 		} catch (JSONException je) {
-			RPG_MAIN.println("Player data not found, using default values");
+			RPG_MAIN.println(__("msg.error.playerdatamissing")); //$NON-NLS-1$
 		}
 
 		this.name = n;
@@ -105,16 +107,36 @@ public class Player extends Entity {
 		this.startPos = new Coordinates(this.getCoords());
 	}
 
-	/** A nice formatted stats String. */
+	/**
+	 * Constructor that should be used in all cases
+	 * @param n Player name
+	 * @param startingStats Stats to use for the start
+	 * @param position Starting position of the player
+	 * @throws JSONException if map not correct format
+	 * @throws FileNotFoundException if file path invalid
+	 */
+	public Player(String n, Stats startingStats, Coordinates position)
+			throws JSONException, FileNotFoundException, IOException {
+
+		super(position.getX(), position.getY(), position.getZ());
+
+		this.name = n;
+
+		this.xp = 0;
+		this.level = 1;
+		this.health = this.maxHealth = startingStats.maxHealth;
+		this.def = startingStats.def;
+		this.atk = startingStats.atk;
+		this.mob = startingStats.mob;
+		this.necessaryXP = startingStats.necessaryXP;
+
+		this.baseStats = startingStats.clone();
+		this.startPos = new Coordinates(this.getCoords());
+	}
+
+	/** A nicely formatted stats String. */
 	public String statString() {
-		return "\nName: " + this.name +
-				"\nBisherige Stats:" +
-				"\nLevel:        " + this.level +
-				"\nExp:          " + this.xp + " / " + this.necessaryXP +
-				"\nLeben:        " + this.health + " / " + this.maxHealth +
-				"\nVerteidigung: " + this.def +
-				"\nAngriff:      " + this.atk +
-				"\nMobilität:    " + this.mob;
+		return String.format(__("msg.game.stats.level")+"%n", this.level) +  super.statString(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -125,29 +147,25 @@ public class Player extends Entity {
 		this.xp += exp;
 
 		if (this.maxedOut) {
-			RPG_MAIN.println(this.name + " hat bereits den höchsten Level erreicht.");
+			RPG_MAIN.printfln(__("msg.game.playermaxed"), this.name()); //$NON-NLS-1$
 			return;
 		}
-
+		
+		//first check ensures that player has enough xp for the levelup
 		while (this.xp >= this.necessaryXP && !this.maxedOut) {
 			// theoretical index into future stats is to high: no level up possible
 			if (this.level - 1 > this.futureStats.size() - 1) {
-				RPG_MAIN.println(
-						this.name + " hat den maximalen Level von " + this.level + " erreicht. Herzlichen Glückwunsch!");
+				RPG_MAIN.printfln(__("msg.game.playerreachedmax"), this.name(), this.level); //$NON-NLS-1$
 				this.maxedOut = true;
 				break;
 			}
 
-			RPG_MAIN.println("\n\nLevel " + (this.level + 1) + " erreicht!\n");
-			RPG_MAIN.println("Bisherige Stats:");
-			RPG_MAIN.println("Level:            " + this.level);
-			RPG_MAIN.println("Maximales Leben:  " + this.maxHealth);
-			RPG_MAIN.println("Verteidigung:     " + this.def);
-			RPG_MAIN.println("Angriff:          " + this.atk);
-			RPG_MAIN.println("Mobilität:        " + this.mob);
+			RPG_MAIN.printfln(__("msg.game.levelup"), //$NON-NLS-1$
+					(this.level + 1));
+			RPG_MAIN.println(this.statString());
 
 			this.xp -= this.necessaryXP;
-			this.level++;
+			++this.level;
 
 			// Future stats start at level 2 and are zero-indexed: subtract 2 from level
 			int statIndex = this.level - 2;
@@ -157,12 +175,8 @@ public class Player extends Entity {
 			this.necessaryXP = this.futureStats.get(statIndex).necessaryXP;
 			this.mob = this.futureStats.get(statIndex).mob;
 
-			RPG_MAIN.println("\nNeue Stats:");
-			RPG_MAIN.println("Level:            " + this.level);
-			RPG_MAIN.println("Maximales Leben:  " + this.maxHealth);
-			RPG_MAIN.println("Verteidigung:     " + this.def);
-			RPG_MAIN.println("Angriff:          " + this.atk);
-			RPG_MAIN.println("Mobilität:        " + this.mob);
+			RPG_MAIN.println(System.lineSeparator() + __("msg.game.levelnow")); //$NON-NLS-1$
+			RPG_MAIN.println(this.statString());
 		}
 	}
 
@@ -179,9 +193,13 @@ public class Player extends Entity {
 
 	/**
 	 * Sets all stats back to the base stats declared in the beginning. Used for
-	 * "killing" the player.
+	 * "killing" the player. Also resets the player position
 	 */
 	public void resetToBaseStats() {
+		super.x = this.startPos.x;
+		super.y = this.startPos.y;
+		super.z = this.startPos.z;
+		
 		this.atk = baseStats.atk;
 		this.def = baseStats.def;
 		this.maxHealth = this.health = baseStats.maxHealth;

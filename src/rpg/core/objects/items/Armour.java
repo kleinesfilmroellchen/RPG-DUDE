@@ -1,9 +1,10 @@
 package rpg.core.objects.items;
 
 import rpg.core.GameConst;
-import rpg.core.objects.Item;
+import rpg.core.interfaces.IItem;
 import rpg.core.objects.Player;
 import rpg.helpers.State;
+import rpg.local.TextMessages;
 
 /**
  * Armour is a special type of equipment that the player can wear through his
@@ -11,7 +12,7 @@ import rpg.helpers.State;
  * specified by the "weight".
  * @author malub
  */
-public class Armour implements Item {
+public class Armour implements IItem {
 
 	private String msg;
 
@@ -40,7 +41,7 @@ public class Armour implements Item {
 
 	@Override
 	public String getDescription() {
-		return String.format("Rüstungen schützen dich vor Angriffen.%n- Schutz: %d%n- Gewicht: %.2f", protection, weight);
+		return String.format(IItem.__("msg.items.armourinfo"), protection, weight); //$NON-NLS-1$
 	}
 
 	@Override
@@ -58,14 +59,14 @@ public class Armour implements Item {
 
 	@Override
 	public State use(Player player) {
-		msg = "Eine Rüstung kann nicht benutzt werden!";
+		msg = IItem.__("msg.error.notusable"); //$NON-NLS-1$
 		return State.failed;
 	}
 
 	@Override
 	public State equip(Player player) {
 		if (player.armour.isFull()) {
-			msg = "Du hast bereits eine Rüstung angelegt!";
+			msg = IItem.__("msg.error.alreadyequipped"); //$NON-NLS-1$
 			return State.notAllowed;
 		}
 		player.armour.add(this);

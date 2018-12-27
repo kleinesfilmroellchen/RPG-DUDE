@@ -184,8 +184,16 @@ public class Coordinates {
 		// z greater == neighbor lower (-1), equality not possible
 		return this.z > other.z ? -1 : 1;
 	}
+	
+	public Coordinates clone() {
+		return new Coordinates(this.getX(), this.getY(), this.getZ());
+	}
 
 	public String toString() {
 		return "( " + this.x + " | " + this.y + " | " + this.z + " )";
+	}
+	
+	public int hashCode() {
+		return super.hashCode() ^ (this.getX()<<24) ^ (this.getY()<<12) ^ (this.getZ()<<0);
 	}
 }

@@ -1,4 +1,4 @@
-package rpg.core.objects;
+package rpg.core.interfaces;
 
 /**
  * An interface as the base of all magic symbols (fight system).
@@ -7,7 +7,7 @@ package rpg.core.objects;
  * @version 0.0.0008
  *
  */
-public interface MagicSymbol {
+public interface IMagicSymbol {
 	/**
 	 * Getter for the symbol's name
 	 */

@@ -78,10 +78,4 @@ public final class GameConst {
 	 * @see rpg.core.GameConst#requestPlayerLevels Other levels (2+)
 	 */
 	public static final Stats P_BASE_LEVEL = new Stats(20, 1, 1, 1, 25);
-
-	/**
-	 * The absolute Path for wherever the program is run. Already adds a "\" so a
-	 * file name can directly be appended to it.
-	 */
-	public static final String absolutePath = new File(".").getAbsolutePath() + "\\";
 }

@@ -1,6 +1,6 @@
 package rpg.core.objects.items;
 
-import rpg.core.objects.Item;
+import rpg.core.interfaces.IItem;
 import rpg.core.objects.Player;
 import rpg.helpers.State;
 
@@ -9,9 +9,9 @@ import rpg.helpers.State;
  * @author kleinesfilmröllchen
  * @version 0.0.0009
  * @since 0.0.0008
- * @see rpg.core.objects.Item Item interface
+ * @see rpg.core.interfaces.IItem Item interface
  */
-public class Abillity implements Item {
+public class Abillity implements IItem {
 
 	private String lastFailMessage = "";
 

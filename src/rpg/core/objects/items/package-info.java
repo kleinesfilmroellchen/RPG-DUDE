@@ -4,6 +4,6 @@
  * @author kleinesfilmröllchen
  * @since 0.0.0007
  * @version 0.0.0008
- * @see rpg.core.objects.Item Item interface
+ * @see rpg.core.interfaces.IItem Item interface
  */
 package rpg.core.objects.items;

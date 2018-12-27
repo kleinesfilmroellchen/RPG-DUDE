@@ -1,7 +1,7 @@
 package rpg.core;
 
 import java.util.ArrayList;
-import rpg.core.objects.Item;
+import rpg.core.interfaces.IItem;
 import rpg.core.objects.Slots;
 import rpg.helpers.State;
 
@@ -13,11 +13,11 @@ import rpg.helpers.State;
 final class Recipes {
 
 	public class CraftingRecipe {
-		private ArrayList<Item>	inputItems;
-		private ArrayList<Item>	outputItems;
+		private ArrayList<IItem>	inputItems;
+		private ArrayList<IItem>	outputItems;
 		private int					requiredLevel;
 
-		public CraftingRecipe(ArrayList<Item> from, ArrayList<Item> to, int requiredLevel) {
+		public CraftingRecipe(ArrayList<IItem> from, ArrayList<IItem> to, int requiredLevel) {
 			this.inputItems = from;
 			this.outputItems = to;
 			this.requiredLevel = requiredLevel;
@@ -32,7 +32,7 @@ final class Recipes {
 		 * @return finished if all craftings are executed, earlyExit if at least one
 		 * crafting could not be executed, failed if something goes wrong.
 		 */
-		public State craft(Slots<Item> storage, int amount) {
+		public State craft(Slots<IItem> storage, int amount) {
 			State lastState = State.finished;
 			for (int i = 0; i < amount; ++i) {
 				lastState = craft(storage);

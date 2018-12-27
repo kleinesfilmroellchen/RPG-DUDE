@@ -2,8 +2,10 @@ package rpg.helpers;
 
 import java.lang.reflect.InvocationTargetException;
 import rpg.core.GameConst;
+import rpg.core.interfaces.IItem;
 import rpg.core.objects.*;
 import rpg.core.objects.items.*;
+import rpg.local.TextMessages;
 
 /**
  * Creator of various objects.
@@ -13,81 +15,85 @@ import rpg.core.objects.items.*;
  */
 public final class Factory {
 	public static final Armour leatherArmour() {
-		return new Armour(GameConst.LEATHER_DEF, GameConst.LEATHER_DEF * GameConst.ARMOUR_WEIGHT, "Lederrüstung",
-				"leatherArmour");
+		return new Armour(GameConst.LEATHER_DEF, GameConst.LEATHER_DEF * GameConst.ARMOUR_WEIGHT, Factory.__("msg.game.items.leatherarmour"), //$NON-NLS-1$
+				"leatherArmour"); //$NON-NLS-1$
 	}
 
 	public static final Armour bronzeArmour() {
-		return new Armour(GameConst.BRONZE_DEF, GameConst.BRONZE_DEF * GameConst.ARMOUR_WEIGHT, "Bronzerüstung",
-				"bronzeArmour");
+		return new Armour(GameConst.BRONZE_DEF, GameConst.BRONZE_DEF * GameConst.ARMOUR_WEIGHT, Factory.__("msg.game.items.bronzearmour"), //$NON-NLS-1$
+				"bronzeArmour"); //$NON-NLS-1$
 	}
 
 	public static final Armour ironArmour() {
-		return new Armour(GameConst.IRON_DEF, GameConst.IRON_DEF * GameConst.ARMOUR_WEIGHT, "Eisenrüstung", "ironArmour");
+		return new Armour(GameConst.IRON_DEF, GameConst.IRON_DEF * GameConst.ARMOUR_WEIGHT, Factory.__("msg.game.items.ironarmour"), "ironArmour"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public static final Armour silverArmour() {
-		return new Armour(GameConst.SILVER_DEF, GameConst.SILVER_DEF * GameConst.ARMOUR_WEIGHT, "Silberrüstung",
-				"silverArmour");
+		return new Armour(GameConst.SILVER_DEF, GameConst.SILVER_DEF * GameConst.ARMOUR_WEIGHT, Factory.__("msg.game.items.silverarmour"), //$NON-NLS-1$
+				"silverArmour"); //$NON-NLS-1$
 	}
 
 	public static final Armour magicArmour() {
-		return new Armour(GameConst.MAGIC_DEF, GameConst.MAGIC_DEF * GameConst.ARMOUR_WEIGHT, "Magieelementrüstung",
-				"magicArmour");
+		return new Armour(GameConst.MAGIC_DEF, GameConst.MAGIC_DEF * GameConst.ARMOUR_WEIGHT, Factory.__("msg.game.items.magicarmour"), //$NON-NLS-1$
+				"magicArmour"); //$NON-NLS-1$
 	}
 
-	public static final Item leather() {
-		return new CraftingI("Leder",
-				"Das Leder eines Tieres. Wird zur Herstellung von weiteren Items benötigt.",
-				"leather", 4);
+	public static final IItem leather() {
+		return new CraftingI(Factory.__("msg.game.items.leather"), //$NON-NLS-1$
+				Factory.__("msg.game.items.leatherdesc"), //$NON-NLS-1$
+				"leather", 4); //$NON-NLS-1$
 	}
 
-	public static final Item wood() {
-		return new CraftingI("Holz",
-				"Ein Holzblock aus einem stabilen Baum. Holz ist für alles Mögliche zu gebrauchen.",
-				"wood", 5);
+	public static final IItem wood() {
+		return new CraftingI(Factory.__("msg.game.items.wood"), //$NON-NLS-1$
+				Factory.__("msg.game.items.wooddesc"), //$NON-NLS-1$
+				"wood", 5); //$NON-NLS-1$
 	}
 
-	public static final Item stick() {
-		return new CraftingI("Stock",
-				"Ein stabiler Holzstab für Werkzeuge und Waffen",
-				"stick", 1);
+	public static final IItem stick() {
+		return new CraftingI(Factory.__("msg.game.items.stick"), //$NON-NLS-1$
+				Factory.__("msg.game.items.stickdesc"), //$NON-NLS-1$
+				"stick", 1); //$NON-NLS-1$
 	}
 
-	public static final Item iron() {
-		return new CraftingI("Eisen",
-				"Hochwertiges raffiniertes Metall aus der Erde. Sehr stabil, für exzellente Werkzeuge.",
-				"iron", 10);
+	public static final IItem iron() {
+		return new CraftingI(Factory.__("msg.game.items.iron"), //$NON-NLS-1$
+				Factory.__("msg.game.items.irondesc"), //$NON-NLS-1$
+				"iron", 10); //$NON-NLS-1$
 	}
 
-	public static final Item bronze() {
-		return new CraftingI("Bronze",
-				"Eine Legierung aus Kupfer und Zinn und das älteste Werkzeugmetall. Für den Anfang sehr gut.",
-				"bronze", 8);
+	public static final IItem bronze() {
+		return new CraftingI(Factory.__("msg.game.items.bronze"), //$NON-NLS-1$
+				Factory.__("msg.game.items.bronzedesc"), //$NON-NLS-1$
+				"bronze", 8); //$NON-NLS-1$
 	}
 
-	public static final Item silver() {
-		return new CraftingI("Silber",
-				"Dieses edle Metall kann zur Herstellung der schärfsten Waffen verwendet werden und ist nahezu unzerstörbar.",
-				"silver", 20);
+	public static final IItem silver() {
+		return new CraftingI(Factory.__("msg.game.items.silver"), //$NON-NLS-1$
+				Factory.__("msg.game.items.silverdesc"), //$NON-NLS-1$
+				"silver", 20); //$NON-NLS-1$
 	}
 
-	public static final Item magicElement() {
-		return new CraftingI("Magieelement",
-				"Ein wundersames Material aus den Tiefen der Erde, stärker als jedes andere Metall.",
-				"magicElement", 50);
+	public static final IItem magicElement() {
+		return new CraftingI(Factory.__("msg.game.items.magicelmt"), //$NON-NLS-1$
+				Factory.__("msg.game.items.magicelmtdesc"), //$NON-NLS-1$
+				"magicElement", 50); //$NON-NLS-1$
 	}
 
-	public static final Item byId(String id) {
+	public static final IItem byId(String id) {
 		try {
 			// finds a method with the id's name, calls and returns it
-			return (Item) Factory.class.getMethod(id).invoke(null);
+			return (IItem) Factory.class.getMethod(id).invoke(null);
 		} catch (InvocationTargetException e) {
-			throw new RuntimeException("Exception in factory method " + id + "()", e);
+			throw new RuntimeException(String.format(Factory.__("msg.error.factory"), id), e); 
 		} catch (NoSuchMethodException e) {
-			throw new IllegalArgumentException("Unknown id " + id, e);
+			throw new IllegalArgumentException(String.format(Factory.__("msg.error.unknownid"), id), e);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static String __(String key) {
+		return TextMessages._t(key);
 	}
 }
